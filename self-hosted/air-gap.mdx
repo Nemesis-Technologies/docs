@@ -1,0 +1,116 @@
+---
+title: "Air-gap pack"
+sidebarTitle: "Air-gap"
+description: "Pack on a connected host, sneakernet, docker load, then no-pull compose. Hub-pull compose is not this path."
+keywords: ["air-gap", "pack-airgap", "compose.airgap", "IL", "closed network"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+Closed-network / IL checklist. Pack on a **connected** host, sneakernet media, `docker load`, then start with **no pull and no build**. There is **no** `*load-check*.sh` — load and health are `docker load` + `docker compose` as below. This file does not claim a live IL was timed. Do not claim air-gap shipped as a customer product.
+
+Cite, do not dump the full checklist: portal [`apps/self-hosted/AIR-GAP.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/AIR-GAP.md) at `e1172084` (NMS-81 / [ADR-0063](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0063-air-gap-disconnected.md)). Pack: [`pack-airgap.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/pack-airgap.sh). Override: [`compose.airgap.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.airgap.yaml).
+
+<Danger>
+  **Hub-pull compose ≠ air-gap.** [`LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) / [`compose.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.yaml) pull Docker Hub and build. Do **not** run `docker compose up --build` on the closed network. Do **not** `docker compose pull`.
+</Danger>
+
+This pack sits **on** the ADR-0062 lab compose. It does not rewrite `compose.yaml`. Same three processes: console, local Postgres 17, pre-linked `nmlw_` worker. No fourth product process. Customer `nmsp_` is out.
+
+## Pack on a connected host
+
+That host may pull Docker Hub, clone GitHub, `npm`, `go`, and link the engine. The IL never does this.
+
+```bash
+# On a machine with outbound HTTPS. Not the IL.
+git clone https://github.com/Nemesis-Technologies/portal.git
+cd portal
+git checkout e11720843762a8a7c2be7f12e31ec0b44e3c0bda
+cd apps/self-hosted
+# ENGINE_SRC is a local checkout of db_scan_engine (pack-time copy only).
+ENGINE_SRC=/path/to/db_scan_engine ./pack-airgap.sh
+```
+
+`pack-airgap.sh` builds and `docker save`s:
+
+| Image | Source |
+| --- | --- |
+| `postgres:17` | Hub pull on the connected host |
+| `nemesis-lab-cloud:airgap` | `cloud.Dockerfile` / same `apps/cloud` |
+| `nemesis-lab-worker:airgap` | `lab-worker.airgap.Dockerfile`, **pre-linked** |
+
+Optional: `OUT=/path/to/nemesis-lab-airgap-images.tar` and `SHARED_SRC=/path/to/shared`. Default output is `apps/self-hosted/nemesis-lab-airgap-images.tar`.
+
+Pack-time copies `db_scan_engine` into a **gitignored** `.airgap-pack/` stage. Do not commit that stage. Do not vendor the engine into portal git. Portal CI still must not fetch the engine.
+
+## Sneakernet
+
+Copy onto the closed network (media / courier — not this product):
+
+- `nemesis-lab-airgap-images.tar`
+- `apps/self-hosted/compose.yaml` (connected NMS-80 file; do not rewrite it)
+- `apps/self-hosted/compose.airgap.yaml`
+- `apps/self-hosted/airgap-license-gate.sh`
+- `apps/self-hosted/airgap-license-validate.sh`
+- `apps/self-hosted/nemesis-license.sh`
+- `apps/self-hosted/.env.example` (and `mint-lab-worker.sh` if you will mint on-box)
+- A **local license file** you already have (presence required)
+- The matching **public verify key**. Private signing key stays **off** the IL.
+
+Closed network **never** clones GitHub, never `npm` / `go`, never Hub / GHCR, never DISA, never a license-server.
+
+Generate the license on a signing host first: [License](/self-hosted/license).
+
+## docker load and no-pull bring-up
+
+On the closed network, from the copied `apps/self-hosted/` directory:
+
+```bash
+cp .env.example .env
+# Distinct secrets generated on-box. Never reuse NEXTAUTH_SECRET as VAULT_LOCAL_KEY.
+
+export NEMESIS_LICENSE_FILE=/path/to/local/nemesis.lic
+export NEMESIS_LICENSE_VERIFY_KEY_FILE=/path/to/local/nemesis.lic.pub
+
+docker load -i nemesis-lab-airgap-images.tar
+export NEMESIS_AIRGAP=1
+export COMPOSE_FILE=compose.yaml:compose.airgap.yaml
+docker compose up -d --no-build --pull never
+```
+
+Equivalent:
+
+```bash
+docker compose -f compose.yaml -f compose.airgap.yaml up -d --no-build --pull never
+```
+
+`pull_policy: never` is on every service in `compose.airgap.yaml`. The `lab` network is `internal: true` (no outbound internet). Host port 3000 may stay for the console.
+
+Wait until `cloud` is healthy. Open **http://localhost:3000**. Signup + mint `nmlw_` as on [Lab compose](/self-hosted/lab-compose). When `NEMESIS_AIRGAP=1`, [`mint-lab-worker.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/mint-lab-worker.sh) uses `--no-build --pull never`. Do not paste `nmsp_`.
+
+Missing, empty, unreadable, or directory-mounted license → **refuse to start**. See [License](/self-hosted/license).
+
+## Health on the IL
+
+```bash
+docker compose -f compose.yaml -f compose.airgap.yaml ps
+docker compose -f compose.yaml -f compose.airgap.yaml logs lab-worker --tail=50
+```
+
+Success: `license-gate` completed, `postgres` / `cloud` healthy, lab-worker pulling **local** `http://cloud:3000`, no Hub / GHCR / git / npm / go / DISA / license-server. Empty pull is success when nothing is queued.
+
+## Down
+
+```bash
+docker compose -f compose.yaml -f compose.airgap.yaml down
+```
+
+Adding `-v` drops the lab control-plane volume. That is not a backup or findings-pack story.
+
+## Honesty / out
+
+- Offline content = already-embedded official **non-CUI** packs. No runtime DISA fetch. CUI never.
+- Do not invent a phone-home so you can “turn it off.” None exists.
+- **Out:** Helm air-gap, n-1, classified / CUI enclave, customer-product air-gap, `nmsp_`, vendoring the engine into portal git, rewriting ADR-0062 / `compose.yaml`.

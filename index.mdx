@@ -12,15 +12,21 @@ This site is the **public** customer surface for Nemesis: Admin, ISSO, and contr
 
 The acceptance path is a **first scan you can complete from these pages**: install the lab stack, register a least-priv Postgres 16 target, queue a STIG scan, export CKL when findings exist, then record a waiver overlay.
 
-<Card title="First-scan path" icon="list-checks" href="/first-scan/overview">
-  Install → add target → run scan → export CKL → waivers. Architecture for a reviewer is linked at the end.
-</Card>
+<Columns cols={2}>
+  <Card title="First-scan path" icon="list-checks" href="/first-scan/overview">
+    Install → add target → run scan → export CKL → waivers. Architecture for a reviewer is linked at the end.
+  </Card>
+  <Card title="Lab / closed network" icon="server" href="/self-hosted/overview">
+    Connected Hub-pull compose, air-gap pack / load, offline license. Scripts only — no `nemesis` CLI yet.
+  </Card>
+</Columns>
 
 ## What this site covers
 
 | You are | Start here |
 | --- | --- |
 | Contractor DBA bringing up a lab | [Install](/first-scan/install), then [add a target](/first-scan/add-target) |
+| Operator running connected compose / air-gap pack / license | [Lab / closed network](/self-hosted/overview) |
 | Operator running the first STIG scan | [Run scan](/first-scan/run-scan) |
 | ISSO exporting a checklist | [Export CKL](/first-scan/export-ckl) |
 | ISSO / Analyst recording a waiver | [Waivers](/first-scan/waivers) |
@@ -28,7 +34,8 @@ The acceptance path is a **first scan you can complete from these pages**: insta
 
 ## What this site does not claim
 
-- Production-ready on-prem, air-gap, or multi-cluster product.
+- Production-ready on-prem, air-gap shipped as a customer product, or multi-cluster. **Hub-pull compose ≠ air-gap.**
+- A shipped `nemesis` / `nemesis-cli` binary ([NMS-205](https://linear.app/nemesistech/issue/NMS-205/build-nemesis-cli-phase-1-lab-air-gap-license-operator) is Backlog).
 - CUI, confidential STIG packages, or a standalone XCCDF dump.
 - Full engine coverage (MySQL, Mongo, SQL Server, Oracle packs may exist in the engine; they are not this first-scan path).
 - FedRAMP, CMMC PASS, SOC 2, or any certification.
@@ -36,4 +43,4 @@ The acceptance path is a **first scan you can complete from these pages**: insta
 
 ## Cited portal tip
 
-Install, least-priv SQL, CKL, and waiver pages cite portal `main` at [`8daddb089a0785b3beead9b0dd309e053acfdbfd`](https://github.com/Nemesis-Technologies/portal/tree/8daddb089a0785b3beead9b0dd309e053acfdbfd). Confirm HEAD if you are reading later. Do not treat portal `docs/runbooks` as relocated into this repo.
+Cited portal `main` after NMS-140: [`e11720843762a8a7c2be7f12e31ec0b44e3c0bda`](https://github.com/Nemesis-Technologies/portal/tree/e11720843762a8a7c2be7f12e31ec0b44e3c0bda). Confirm HEAD if you are reading later. Do not treat portal `docs/runbooks` as relocated into this repo.

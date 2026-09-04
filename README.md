@@ -9,6 +9,7 @@ It is **not** the internal engineer handbook (`docs-internal`). It is **not** th
 - **Not production-ready.**
 - **CUI never.**
 - **Postgres-first** (STIG Postgres 16). Do not invent full multi-engine coverage.
+- **Hub-pull compose ≠ air-gap.**
 - No FedRAMP / CMMC PASS / certified claims.
 - No DSN in examples. No passwords in SQL sketches.
 
@@ -42,6 +43,11 @@ Mintlify hosted preview (after this repo is connected in the Mintlify dashboard)
 | Export CKL | `first-scan/export-ckl.mdx` |
 | Waivers | `first-scan/waivers.mdx` |
 | Architecture for reviewer | `architecture/for-reviewer.mdx` |
+| Lab / closed-network path map | `self-hosted/overview.mdx` |
+| Lab compose | `self-hosted/lab-compose.mdx` |
+| Air-gap pack | `self-hosted/air-gap.mdx` |
+| License | `self-hosted/license.mdx` |
+| Tool family | `self-hosted/tool-family.mdx` |
 
 ## Branding
 
@@ -49,10 +55,12 @@ Favicon uses the same mark as the internal handbook (`docs-internal` `favicon.sv
 
 ## Sources of truth
 
-Cited against portal `main` tip `8daddb089a0785b3beead9b0dd309e053acfdbfd` (confirm HEAD if you are reading later):
+Cited against portal `main` after NMS-140 at `e11720843762a8a7c2be7f12e31ec0b44e3c0bda` (confirm HEAD if you are reading later):
 
-- Lab compose install: `apps/self-hosted/LAB-INSTALL.md`
+- Lab compose install: `apps/self-hosted/LAB-INSTALL.md` (NMS-80 / ADR-0062)
 - Helm / n-1 notes: `apps/self-hosted/HELM-INSTALL.md`
+- Air-gap pack: `apps/self-hosted/AIR-GAP.md`, `pack-airgap.sh`, `compose.airgap.yaml` (NMS-81 / ADR-0063)
+- License: `apps/self-hosted/nemesis-license.sh`, `airgap-license-gate.sh`, `airgap-license-validate.sh` (NMS-33 / ADR-0070)
 - Least-priv classify role: `docs/runbooks/nms-classify-sample-lab-role.md` and `.sql`
 - CKL export design: `docs/ADR-0035-ckl-portal-export.md`
 - Waivers / POA&M: `docs/ADR-0014-poam-waiver.md`

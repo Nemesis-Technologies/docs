@@ -1,0 +1,60 @@
+---
+title: "Lab / closed network"
+sidebarTitle: "Overview"
+description: "Operator path map: connected Hub-pull lab, then air-gap pack, then offline license. No nemesis CLI yet."
+keywords: ["lab ops", "air-gap", "license", "compose", "operator"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+An operator should be able to run **connected lab compose**, **air-gap pack / load**, and **offline license** from **this site alone**. Portal files under `apps/self-hosted/` are cited by path. They are not copied here as the home.
+
+There is **no** shipped `nemesis` CLI. [NMS-205](https://linear.app/nemesistech/issue/NMS-205/build-nemesis-cli-phase-1-lab-air-gap-license-operator) is Backlog. Do not wait for that binary. Use the existing scripts.
+
+<Warning>
+  **Hub-pull compose ≠ air-gap.** [`compose.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.yaml) pulls / builds on a connected host. Closed-network bring-up is [`compose.airgap.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.airgap.yaml) after `docker load`. Do not run `docker compose up --build` on an IL.
+</Warning>
+
+<Steps>
+  <Step title="Bring up the connected lab">
+    Single-node Docker Compose under `apps/self-hosted/`. Hub-pull path. Console + local control-plane Postgres 17 + outbound-pull `nmlw_` lab-worker. See [Lab compose](/self-hosted/lab-compose). First STIG scan after that is the [first-scan path](/first-scan/overview).
+  </Step>
+  <Step title="Pack for a closed network (optional)">
+    On a **connected** host, run `pack-airgap.sh`, sneakernet the tarball, `docker load`, then no-pull compose. See [Air-gap pack](/self-hosted/air-gap).
+  </Step>
+  <Step title="Generate and validate a license">
+    Offline Ed25519 file. Presence fail-closed, then schema + signature. No phone-home. See [License](/self-hosted/license).
+  </Step>
+</Steps>
+
+Which tool you are holding is on the [tool family](/self-hosted/tool-family) table. `dbscanner` is the eng/lab engine CLI. `dam-proxy` is the Protect DAM daemon. Neither is the future operator CLI.
+
+## What you will have at the end
+
+- Connected lab: console at `http://localhost:3000` from Hub-pull `compose.yaml` (not air-gap).
+- Closed network (if you packed): loaded `postgres:17`, `nemesis-lab-cloud:airgap`, `nemesis-lab-worker:airgap`, started with `--no-build --pull never`.
+- A signed license file plus a public verify key. Private signing key stays operator-held and off the IL.
+- No `nemesis` binary. Scripts only.
+
+## Sources (cite, do not vendor)
+
+Portal `main` tip [`e1172084`](https://github.com/Nemesis-Technologies/portal/tree/e11720843762a8a7c2be7f12e31ec0b44e3c0bda) (after NMS-140). Confirm HEAD if you are reading later.
+
+| Topic | Portal path |
+| --- | --- |
+| Lab compose | [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) (NMS-80 / ADR-0062) |
+| Hub-pull compose | [`apps/self-hosted/compose.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.yaml) |
+| Air-gap checklist | [`apps/self-hosted/AIR-GAP.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/AIR-GAP.md) (NMS-81 / ADR-0063) |
+| Pack script | [`apps/self-hosted/pack-airgap.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/pack-airgap.sh) |
+| No-pull override | [`apps/self-hosted/compose.airgap.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.airgap.yaml) |
+| License CLI | [`apps/self-hosted/nemesis-license.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/nemesis-license.sh) (NMS-33 / ADR-0070) |
+| License gate / validate | [`airgap-license-gate.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/airgap-license-gate.sh) + [`airgap-license-validate.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/airgap-license-validate.sh) |
+| Mint `nmlw_` | [`apps/self-hosted/mint-lab-worker.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/mint-lab-worker.sh) |
+
+ADR papers stay in portal. This site summarizes for an operator. Do not paste ADR bodies into tickets or customer packets from this repo.
+
+<Note>
+  Folder pointer only: portal [`apps/self-hosted/README.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/README.md) names the same three runbooks. Follow the pages here.
+</Note>

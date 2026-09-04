@@ -13,7 +13,7 @@ A contractor DBA should be able to finish this path from **this site alone**. Po
 
 <Steps>
   <Step title="Install the lab stack">
-    Default path is single-node compose (`apps/self-hosted/LAB-INSTALL.md`). Helm is optional and is the first chart only (`HELM-INSTALL.md`). Both bring up the console, local control-plane Postgres 17, and an outbound-pull `nmlw_` lab-worker. Neither is production-ready. See [Install](/first-scan/install).
+    Default path is single-node compose (`apps/self-hosted/LAB-INSTALL.md`). Helm is optional and is the first chart only (`HELM-INSTALL.md`). Both bring up the console, local control-plane Postgres 17, and an outbound-pull `nmlw_` lab-worker. Neither is production-ready. **Hub-pull compose ≠ air-gap.** See [Install](/first-scan/install) or [Lab compose](/self-hosted/lab-compose).
   </Step>
   <Step title="Add a Postgres 16 target">
     Register a hostname and port on **Assets** (never a DSN). Vault a dedicated least-priv LOGIN. The first scan uses a **STIG** account, not classify role `nms_classify_sample`. See [Add a target](/first-scan/add-target).
@@ -42,15 +42,15 @@ ISSO reviewers who need the plane split first can read [Architecture for reviewe
 
 ## Sources (cite, do not vendor)
 
-Portal `main` tip [`8daddb08`](https://github.com/Nemesis-Technologies/portal/tree/8daddb089a0785b3beead9b0dd309e053acfdbfd):
+Portal `main` tip [`e1172084`](https://github.com/Nemesis-Technologies/portal/tree/e11720843762a8a7c2be7f12e31ec0b44e3c0bda):
 
 | Topic | Portal path |
 | --- | --- |
-| Lab compose | [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/apps/self-hosted/LAB-INSTALL.md) (NMS-80 / ADR-0062) |
-| Helm | [`apps/self-hosted/HELM-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/apps/self-hosted/HELM-INSTALL.md) (NMS-195 / ADR-0068) |
-| Classify role SQL | [`docs/runbooks/nms-classify-sample-lab-role.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/runbooks/nms-classify-sample-lab-role.md) + [`.sql`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/runbooks/nms-classify-sample-lab-role.sql) (NMS-115 / ADR-0029) |
-| CKL export | [`docs/ADR-0035-ckl-portal-export.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/ADR-0035-ckl-portal-export.md) |
-| Waivers | [`docs/ADR-0014-poam-waiver.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/ADR-0014-poam-waiver.md) |
+| Lab compose | [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) (NMS-80 / ADR-0062) |
+| Helm | [`apps/self-hosted/HELM-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/HELM-INSTALL.md) (NMS-195 / ADR-0068) |
+| Classify role SQL | [`docs/runbooks/nms-classify-sample-lab-role.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/runbooks/nms-classify-sample-lab-role.md) + [`.sql`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/runbooks/nms-classify-sample-lab-role.sql) (NMS-115 / ADR-0029) |
+| CKL export | [`docs/ADR-0035-ckl-portal-export.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0035-ckl-portal-export.md) |
+| Waivers | [`docs/ADR-0014-poam-waiver.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0014-poam-waiver.md) |
 
 <Note>
   Portal ADRs stay in portal. This site summarizes for a customer reader. Do not paste ADR bodies into tickets or customer packets from this repo.
