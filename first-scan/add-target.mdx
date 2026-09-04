@@ -1,0 +1,121 @@
+---
+title: "Add a target"
+description: "Register a lab Postgres 16 host and vault a least-priv LOGIN. Distinguish STIG vs classify nms_classify_sample."
+keywords: ["add target", "least privilege", "nms_classify_sample", "lab_scan", "postgres"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+First scan is **STIG Postgres 16** (`stig-postgres-16`). You register a hostname and port, then vault a dedicated least-priv LOGIN. Host is a hostname only — **never a DSN**. No passwords appear in these sketches.
+
+The compose / Helm control-plane database is Postgres 17 and is **not** this target. Point the asset at a lab Postgres 16 the `nmlw_` worker can reach.
+
+Cite: portal [`docs/runbooks/nms-classify-sample-lab-role.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/runbooks/nms-classify-sample-lab-role.md) and [`.sql`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/runbooks/nms-classify-sample-lab-role.sql) at `8daddb08` (NMS-115 / ADR-0029). Paper: [`docs/ADR-0029-restricted-scan-account.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/ADR-0029-restricted-scan-account.md).
+
+## Two accounts (do not merge)
+
+| Account | Product name | Use on first scan? |
+| --- | --- | --- |
+| STIG scan LOGIN | **You name it.** Not a shipped product role. Engine fixture `lab_scan` is lab-only in the engine and is **not** the customer vaulted name. | **Yes.** Dedicated read-only LOGIN for `stig-postgres-16`. |
+| Classify sample | **`nms_classify_sample`** | **No.** Dedicated classify remint. Do not reuse for STIG. |
+
+<Warning>
+  STIG scan-account reuse of `nms_classify_sample` is **no**. Do not grant STIG extras (`pg_read_all_settings`, `SELECT` on `pg_shadow`, `pg_file_settings`) to the classify role. Do not use `postgres`, `rdsadmin`, or `rds_superuser`.
+</Warning>
+
+## Register the asset in the console
+
+Nav: **Assets**. Empty state: add first target, then launch first scan.
+
+<Steps>
+  <Step title="Open Assets">
+    Sign in as Owner, Admin, Analyst, or Operator (`assets.write`). Auditor cannot register assets.
+  </Step>
+  <Step title="Fill Add target">
+    The form is Postgres-first. Enter:
+
+    - **Host** — hostname only (placeholder shape: `lab-postgres.internal`). Never a DSN, never userinfo.
+    - **Port** — default `5432`.
+
+    Submit **Add target**. The console stores `engine: postgres` and `environment: lab` (Nemesis-owned lab DBs only for this first-scan path).
+  </Step>
+  <Step title="Vault the STIG LOGIN">
+    Use a dedicated read-only scan account. Attach a vault credential in **Settings** (Admin). The asset keeps an opaque `credential_ref`. The console stores ciphertext. The worker unwraps JIT in memory. Next.js never sees a plaintext DSN.
+
+    Rotate later by changing the LOGIN on the target, then Admin re-puts vault material for the **same** `credential_ref`. Do not rewrite the Asset row to rotate a password.
+  </Step>
+</Steps>
+
+`VAULT_LOCAL_KEY` must stay distinct from `NEXTAUTH_SECRET`. A dump without the wrap key is not a working console.
+
+## STIG LOGIN contract (you name the role)
+
+Apply on the **target** Postgres 16 as a superuser. Replace `your_stig_login` and the database / schema names with `quote_ident` / `format(%I)` — do not concatenate. **No password in this sketch.** Set the LOGIN password out of band, then store username + password in the vault envelope.
+
+```sql
+-- Contract sketch only. Not portal runtime. Not a shipped product role name.
+-- Not nms_classify_sample. Not engine lab_scan.
+
+CREATE ROLE your_stig_login WITH
+  LOGIN
+  NOSUPERUSER
+  NOCREATEDB
+  NOCREATEROLE
+  NOREPLICATION
+  NOBYPASSRLS
+  INHERIT;
+
+-- Ordinary STIG checks are SHOW / catalog SELECT.
+GRANT CONNECT ON DATABASE your_target_db TO your_stig_login;
+```
+
+Optional extras that the engine’s **lab** role `lab_scan` uses for some V-IDs (do **not** put these on `nms_classify_sample`):
+
+```sql
+-- Optional STIG extras. Lab fixture surface, not required for every check.
+-- GRANT pg_read_all_settings TO your_stig_login;
+-- GRANT SELECT ON pg_catalog.pg_shadow TO your_stig_login;
+```
+
+Must not grant: `SUPERUSER`, `rds_superuser`, `BYPASSRLS`, or identity `rdsadmin` / `postgres`.
+
+## Classify role `nms_classify_sample` (not this scan)
+
+Keep this role if you will run classify-sample later. It is **not** the first-scan STIG account. The classify worker does not apply this SQL. Next.js never sees a plaintext DSN.
+
+Role: one LOGIN `nms_classify_sample`. `NOSUPERUSER` `NOCREATEDB` `NOCREATEROLE` `NOREPLICATION` `NOBYPASSRLS`. Must not be `lab_scan`.
+
+Closed grants on the **target** database you supply:
+
+1. `CONNECT` on that database.
+2. `USAGE` on each schema that classify-sample will sample.
+3. `SELECT` on those tables, or optional `GRANT pg_read_all_data TO nms_classify_sample`.
+4. Ordinary `pg_catalog` `SELECT` that a LOGIN already has. Do not invent extra catalog GRANTs.
+
+Login defaults only (not a SET deny):
+
+```sql
+ALTER ROLE nms_classify_sample SET default_transaction_read_only = on;
+ALTER ROLE nms_classify_sample SET statement_timeout = '15s';
+ALTER ROLE nms_classify_sample SET lock_timeout = '2s';
+```
+
+`REVOKE SET ON PARAMETER default_transaction_read_only FROM nms_classify_sample` is in the runbook because it is the GRANT/REVOKE SET surface. On stock PostgreSQL 15–18, `default_transaction_read_only` is `PGC_USERSET` — that REVOKE **does not deny** `SET … = off`. `ALTER ROLE SET` is a login default only.
+
+<Danger>
+  Stock Postgres has **no** working SET-off deny for this GUC. Classify-sample **lock 4** stays fail-closed: if `SET default_transaction_read_only = off` succeeds, the classify job fails `privilege_failed`. Do **not** REVOKE SET on `statement_timeout` or `lock_timeout` — the worker issues those SETs.
+</Danger>
+
+Lab fixture names in the portal SQL (replace on a customer database): database `classify_sample_lab`, schema `classify_lab`, table `classify_lab.sample_rows`. Apply the runbook `.sql` as a superuser, then connect to that database and apply it again so schema/table grants run.
+
+Password is not in the runbook. Set it out of band. Dedicated classify remint stays (`classify-sample`). Do not merge with STIG-unwrap.
+
+## Honesty
+
+- Postgres-first. Do not invent a MySQL / Mongo first-scan role here.
+- Unmanaged inventory candidates on Assets are not Findings and are not this path.
+- Registering a candidate as `environment: customer` is not the lab first-scan default.
+
+Next: [run the first scan](/first-scan/run-scan).

@@ -1,0 +1,72 @@
+---
+title: "Export CKL"
+description: "Download CKL / CKLB and the evidence package from stored Findings. UNCLASSIFIED. CUI never."
+keywords: ["ckl", "cklb", "evidence package", "stig viewer", "unclassified"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+Portal writes CKL XML and CKLB JSON from **stored** Findings and Asset rows. No engine call. No live rescan. No `StartScan` on the cloud plane.
+
+Cite: portal [`docs/ADR-0035-ckl-portal-export.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/ADR-0035-ckl-portal-export.md) at `8daddb08` (NMS-43). Evidence zip members: portal `apps/cloud/lib/control-plane/evidence-package-format.ts` (NMS-76 / ADR-0020, CKL members on **new** generates).
+
+<Warning>
+  **CUI never.** These files are not a DISA content pack and not a raw XCCDF dump. Marking is UNCLASSIFIED / host-only. DSN-looking hosts are stripped. Do not store or ship confidential / CUI STIG packages.
+</Warning>
+
+## Download CKL / CKLB
+
+Nav: **Findings**. Buttons hang on existing `findings.read` (Admin, Analyst, Operator, Auditor). No new RBAC action.
+
+<Steps>
+  <Step title="Filter Findings to one asset">
+    **Download CKL** and **Download CKLB** render only when the page is asset-scoped. Org-wide Findings does not show those two buttons. Filenames are `nemesis-<asset_id>.ckl` and `nemesis-<asset_id>.cklb`. The asset id is opaque. The filename must not contain DSN or host userinfo.
+  </Step>
+  <Step title="Click Download CKL or Download CKLB">
+    Routes: `GET /api/control-plane/findings/export/ckl` and `/cklb`. Status in the file follows the same map the engine writer uses:
+
+    | Engine status | CKL STATUS | CKLB status |
+    | --- | --- | --- |
+    | PASS | NotAFinding | not_a_finding |
+    | FAIL | Open | open |
+    | SKIPPED / UNABLE_TO_DETERMINE / ERROR | Not_Reviewed | not_reviewed |
+  </Step>
+  <Step title="Open in STIG Viewer / Workbench">
+    When the export exists and the job produced stored findings, the file is intended to open in current DISA STIG Viewer / Workbench without schema errors. Empty Findings produce an empty or not-useful checklist — that is not a Viewer PASS.
+  </Step>
+</Steps>
+
+## What is in the file (honest)
+
+- **Severity** matches the console row (`high` / `medium` / `low`). We do not invent severity from CAT, and we do not invent CAT from severity.
+- **CAT** is Nemesis-authored for four V-IDs only (V-233548, V-233596, V-233602, V-233606 = I). Unmapped V-IDs and `MANUAL-*` stay `cat` empty. These four I’s are **not** official DISA CAT.
+- **`stig_id`** is filled from official **non-CUI** XCCDF embedded in the product when the check is found. Missing stays null (fail closed). There is no public dump route.
+- Comments / details come from stored evidence, already redacted at ingest and redacted again on write. No DSN.
+
+## Evidence package
+
+On Findings or Evidence: **Download evidence package**. Hangs on `findings.read` + `evidence.read`. Not a live rescan.
+
+New generates include:
+
+- `README.txt`
+- `nemesis-results.xml` (Nemesis-authored XCCDF-**shaped** results — not official SCAP)
+- `poam.csv`
+- `waivers.csv`
+- `scan-metadata.json`
+- `ckl/<asset_id>.ckl` and `cklb/<asset_id>.cklb` (one pair per asset in scope)
+- `MANIFEST.sha256`
+
+Already-stored packages stay the same bytes. They are not rewritten to add CKL.
+
+Also on Findings (not CKL, not claimed as STIG Viewer input): **Download results (XML)**, **Export POA&M CSV**, **Download scorecard (PDF)**. The PDF is not a member of the zip.
+
+## Honesty
+
+- Not official DISA / SCAP / a content-pack distribution.
+- Engine CLI `WriteCKL` is a separate path and still does not pass through CAT / official `stig_id`. Product export is portal.
+- Do not treat Viewer-inferred CAT from Severity as our map.
+
+Next: [waivers](/first-scan/waivers).

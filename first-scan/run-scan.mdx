@@ -1,0 +1,65 @@
+---
+title: "Run the first scan"
+sidebarTitle: "Run scan"
+description: "Queue stig-postgres-16. Lab-worker pulls. StartScan runs only when the image linked the engine."
+keywords: ["run scan", "stig-postgres-16", "StartScan", "findings"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+Nav: **Scans**. Pick the registered target, then **Run Scan**. That POSTs `/api/control-plane/jobs` with the asset id. The cloud plane queues only. It does not open a customer or lab DB session and does not call `StartScan`.
+
+Default lab policy is `stig-postgres-16` on queue `scan`. Weekly cron default is Sunday 02:00 UTC. This page is the on-demand first scan.
+
+<Warning>
+  Auditor cannot run scans. The **Run Scan** button is disabled and the API returns 403. Owner / Admin / Analyst / Operator need `scans.run`.
+</Warning>
+
+## Queue the job
+
+<Steps>
+  <Step title="Confirm the asset exists">
+    If Assets is empty, the Scans page tells you to add a target first. Go back to [Add a target](/first-scan/add-target).
+  </Step>
+  <Step title="Select the database">
+    Host shown in the picker is a hostname only — never a DSN.
+  </Step>
+  <Step title="Click Run Scan">
+    The job appears in the Scans table (`queued` → `running` → terminal). Cancel requires `scans.cancel`.
+  </Step>
+  <Step title="Watch the lab-worker pull">
+    Compose: `docker compose logs lab-worker --tail=50`. Helm: `kubectl -n nemesis-lab logs deploy/nemesis-lab-lab-worker --tail=50`.
+
+    You want outbound pull of the org from the cloud service. Empty pull is success when nothing is queued. After you queue, the worker should claim the lab job (`environment=lab` only).
+  </Step>
+</Steps>
+
+## When StartScan actually runs
+
+`StartScan` belongs in the **worker process**, after JIT unwrap in memory.
+
+| Image build | What happens |
+| --- | --- |
+| Built with `GH_TOKEN` / BuildKit `gh_token` that can read private `db_scan_engine` and `shared` (NMS-197) | Default lab-worker image **links** `StartScan` at build (copy `engine_link.go.example` inside the image, then `go get` the engine pin). Portal does **not** vendor the engine into git. |
+| No token | Image build **fails honestly**. |
+| Unlinked local `go run` / portal CI `go test` without the private module | Refuses `StartScan is not linked`. That is OK. |
+
+GitHub Actions does not yet hold that org secret. Do not invent that Findings already run in GHA.
+
+If the worker is unlinked or the job fails before report ingest, **Findings stay empty**. That is not “the target is clean.” The Findings console says empty until a scan writes findings (or a reviewer creates a manual `MANUAL-*` row — not this first-scan path).
+
+## What you should not click on first scan
+
+The Scans page also has Mimic Path A / B, Mimic customer lower-env, STIG of generated lab DB, and Refresh CVE / EOL feed. Those are other products. First scan is **Run Scan** on a registered lab Postgres 16 asset.
+
+STIG-of-lab (after a successful Mimic load) reuses the same `queue=scan` / `stig-postgres-16` path and is labeled “STIG of generated lab DB. Not customer prod.” It is not a substitute for registering your own PG16 target.
+
+## After the job
+
+- Terminal `succeeded` plus a linked worker: open **Findings**. Expect DISA `V-` rows from the Postgres 16 pack when the engine ran.
+- Terminal `failed`: read the error on the Scans row. Dual refuse of non-lab + RDS stays on `nmlw_`. A refuse of `nmsp_` means the wrong token landed in this stack — remove it.
+- Open CAT I on Findings is empty until stored `cat=I` exists (Nemesis-authored four V-IDs). High severity is not CAT I.
+
+Next: [export CKL](/first-scan/export-ckl).
