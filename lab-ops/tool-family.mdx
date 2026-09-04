@@ -1,0 +1,48 @@
+---
+title: "Tool family"
+description: "Existing self-hosted scripts vs future nemesis CLI vs dbscanner vs dam-proxy. The nemesis CLI is not shipped."
+keywords: ["nemesis CLI", "dbscanner", "dam-proxy", "scripts", "NMS-205"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+Four names. They are **not** the same binary. Do not rebrand `dbscanner` or `dam-proxy` as “the Nemesis CLI.” There is **no** unified operator CLI today.
+
+<Warning>
+  The product CLI (`nemesis`, repo `nemesis-cli`) is [NMS-205](https://linear.app/nemesistech/issue/NMS-205/build-nemesis-cli-phase-1-lab-air-gap-license-operator) **Backlog**. It is **not shipped**. Do not create that GitHub repo from this ticket. Do not invent verbs that work today.
+</Warning>
+
+## Comparison
+
+| | Existing scripts | Future `nemesis` CLI | `dbscanner` | `dam-proxy` |
+| --- | --- | --- | --- | --- |
+| **What it is** | Bash + Compose under portal `apps/self-hosted/` | Planned thin operator CLI (Phase 1 wrap of these flows) | Engine / lab CLI | Protect DAM daemon |
+| **Shipped?** | Yes — cite [overview](/lab-ops/overview) | **No.** NMS-205 Backlog | Yes (eng/lab engine) | Yes (daemon) |
+| **Who runs it** | Lab / IL operator | Future Admin operator | Engineer / lab | Operator of the DAM proxy process |
+| **Lab compose** | `docker compose` + `mint-lab-worker.sh` + [`LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) | Planned `lab` / `doctor` | Not this installer | Not this installer |
+| **Air-gap** | `pack-airgap.sh` + `compose.airgap.yaml` | Planned `airgap` | Not the pack path | Not the pack path |
+| **License** | `nemesis-license.sh` + gate / validate | Planned `license` | Does not issue licenses | Not a license CLI |
+| **Scan a database** | Console **Run Scan**; `nmlw_` pulls; engine in-process when linked | Phase 1 does **not** exec `dbscanner`. Later CLI talks **portal API only** | Eng/lab engine entry | Does not scan |
+| **Rebrand as Nemesis CLI?** | No — scripts stay | That **will** be the customer-facing name when built | **No** | **No** |
+
+## What you run today
+
+Operator path on this site:
+
+1. [Lab compose](/lab-ops/lab-compose) — Hub-pull `compose.yaml`
+2. [Air-gap pack](/lab-ops/air-gap) — connected pack, sneakernet, no-pull compose
+3. [License](/lab-ops/license) — `nemesis-license.sh` gen-key / generate / validate
+
+Contractor DBA first scan after the lab is up: [First-scan path](/first-scan/overview).
+
+## What you must not do
+
+- Do not wait for `nemesis` / `nemesis-cli`. It does not exist yet.
+- Do not treat `dbscanner` as the customer operator tool.
+- Do not treat `dam-proxy` as a CLI shell.
+- Do not invent per-offering CLIs (Discovery / Mimic / …).
+- Do not claim Hub-pull compose is air-gap.
+
+Parent plan: [NMS-203](https://linear.app/nemesistech/issue/NMS-203/product-paper-nemesis-operator-tools-cli-needs-plan). This docs ticket is [NMS-204](https://linear.app/nemesistech/issue/NMS-204/docs-existing-lab-air-gap-license-scripts-before-nemesis-cli).

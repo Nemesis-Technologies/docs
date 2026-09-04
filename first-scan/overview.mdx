@@ -13,7 +13,7 @@ A contractor DBA should be able to finish this path from **this site alone**. Po
 
 <Steps>
   <Step title="Install the lab stack">
-    Default path is single-node compose (`apps/self-hosted/LAB-INSTALL.md`). Helm is optional and is the first chart only (`HELM-INSTALL.md`). Both bring up the console, local control-plane Postgres 17, and an outbound-pull `nmlw_` lab-worker. Neither is production-ready. See [Install](/first-scan/install).
+    Default path is single-node compose (`apps/self-hosted/LAB-INSTALL.md`). Helm is optional and is the first chart only (`HELM-INSTALL.md`). Both bring up the console, local control-plane Postgres 17, and an outbound-pull `nmlw_` lab-worker. Neither is production-ready. **Hub-pull compose ≠ air-gap.** See [Install](/first-scan/install) or [Lab compose](/lab-ops/lab-compose).
   </Step>
   <Step title="Add a Postgres 16 target">
     Register a hostname and port on **Assets** (never a DSN). Vault a dedicated least-priv LOGIN. The first scan uses a **STIG** account, not classify role `nms_classify_sample`. See [Add a target](/first-scan/add-target).

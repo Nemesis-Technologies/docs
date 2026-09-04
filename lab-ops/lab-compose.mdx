@@ -1,0 +1,122 @@
+---
+title: "Lab compose"
+description: "Bring up, health-check, and tear down the connected Hub-pull lab. Not air-gap."
+keywords: ["lab compose", "docker compose", "nmlw", "LAB-INSTALL"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+Connected lab path: single-node Docker Compose under `apps/self-hosted/`. This is the **Hub-pull** installer. It is not air-gap. It is not Helm. It is not a timed drill.
+
+Cite, do not duplicate the full runbook: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) at `e1172084` (NMS-80 / [ADR-0062](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0062-lab-compose-installer.md)). File: [`compose.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.yaml).
+
+<Warning>
+  **Hub-pull compose ≠ air-gap.** This file pulls `postgres:17` and builds from Dockerfiles. Closed-network operators use [Air-gap pack](/lab-ops/air-gap). Do not treat a successful `docker compose up --build` as an IL bring-up.
+</Warning>
+
+The contractor DBA first-scan path (add target → scan → CKL) starts after this stack is healthy: [Install](/first-scan/install) then [overview](/first-scan/overview). This page is bring-up / health / down only.
+
+## What comes up
+
+Three processes. One node. Lab only.
+
+1. **Control-plane UI** — the same `apps/cloud` Next.js console. Open `http://localhost:3000`.
+2. **Local control-plane Postgres 17** — console + findings store. Not the STIG target. ISSO demo targets stay Postgres 16, registered separately.
+3. **`nmlw_` lab-worker** — outbound pull from `http://cloud:3000`. `StartScan` in-process only when the image was built with a GitHub token that can read private `db_scan_engine` and `shared`.
+
+Customer-network `nmsp_` is **out**. Do not use root `compose.yaml` / `make up`. Do not use engine `lab/postgres` as this installer.
+
+## Prerequisites
+
+| Need | Why |
+| --- | --- |
+| Docker Engine + Compose v2 | `docker compose version` must work |
+| Git, `curl`, `openssl`, `python3` | Clone + secrets + mint helper |
+| ~4 GiB RAM / ~10 GiB disk | Images + first Next.js compile |
+| Outbound HTTPS | Pull base images. This path is not air-gap. |
+| GitHub token (`GH_TOKEN`) | Fine-grained PAT, `contents:read` on private `db_scan_engine` **and** `shared`. Do not commit it. |
+| Open TCP **3000** on localhost | Console |
+
+Node and Go on the host are not required.
+
+## Bring up
+
+Work only under `apps/self-hosted/` after you clone portal at the cited tip (or later `origin/main` if Orchestrator has moved it).
+
+<Steps>
+  <Step title="Clone portal and enter the installer directory">
+    ```bash
+    git clone https://github.com/Nemesis-Technologies/portal.git
+    cd portal
+    git checkout e11720843762a8a7c2be7f12e31ec0b44e3c0bda
+    cd apps/self-hosted
+    ```
+  </Step>
+  <Step title="Create distinct secrets">
+    Copy `.env.example` to `.env`. Generate **two different** values for `NEXTAUTH_SECRET` and `VAULT_LOCAL_KEY`. Never reuse one as the other. Leave `NEMESIS_LAB_WORKER_TOKEN` and `LAB_WORKER_ORG_ID` empty until you mint. Do not paste an `nmsp_` token. Do not put a database DSN in docs, tickets, or logs.
+
+    ```bash
+    cp .env.example .env
+    sed -i "s|^NEXTAUTH_SECRET=.*|NEXTAUTH_SECRET=$(openssl rand -base64 32 | tr -d '\n')|" .env
+    sed -i "s|^VAULT_LOCAL_KEY=.*|VAULT_LOCAL_KEY=$(openssl rand -base64 32 | tr -d '\n')|" .env
+    ```
+  </Step>
+  <Step title="Start Postgres and the console">
+    ```bash
+    docker compose up -d --build postgres cloud
+    docker compose logs -f cloud
+    ```
+
+    Wait until `cloud` is healthy. First compile can take several minutes. Open **http://localhost:3000**. This stack runs Next.js as `NODE_ENV=development` so the locked recaptcha stub can auto-verify on signup. It is still a **lab** installer.
+  </Step>
+  <Step title="Create the first Owner">
+    Open **http://localhost:3000/signup**. The first user becomes Owner. Confirm Assets / Scans / Findings chrome.
+  </Step>
+  <Step title="Build the lab-worker, mint nmlw_, start the worker">
+    Export `GH_TOKEN` (do not commit). From `apps/self-hosted/`:
+
+    ```bash
+    docker compose build --build-arg GH_TOKEN="$GH_TOKEN" lab-worker
+    chmod +x mint-lab-worker.sh
+    ./mint-lab-worker.sh "$OWNER_EMAIL" "$OWNER_PASSWORD"
+    ```
+
+    Pass the Owner email and password you created at signup — do not commit them. Helper: [`mint-lab-worker.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/mint-lab-worker.sh). The token starts with `nmlw_` and is shown once. Without `GH_TOKEN` the image build **fails honestly**.
+  </Step>
+</Steps>
+
+## Health
+
+```bash
+docker compose ps
+docker compose logs lab-worker --tail=50
+```
+
+Success:
+
+- `postgres` healthy
+- `cloud` healthy; console on port 3000
+- lab-worker log: `lab-worker pulling org <id> from http://cloud:3000`
+- `docker compose config` must not mention `scan-worker` or `nmsp_`
+
+Empty pull (`jobs: []`) is success when no job is queued. A 401/403 means remint. A refuse of `nmsp_` means the wrong token landed in this stack — remove it.
+
+## Down
+
+From `apps/self-hosted/`:
+
+```bash
+docker compose down
+```
+
+Adding `-v` drops the lab control-plane volume. That is not a backup story.
+
+## Honesty / out
+
+- Next.js never unwraps, never sees a DSN, never calls `StartScan`.
+- **Out:** production-ready, FedRAMP, CMMC, certified, air-gap, Helm (see [Install](/first-scan/install) for the optional first chart), backup absorb, `nmsp_` in this stack, a second scanner.
+- Do not invent measured install timings. `LAB-INSTALL.md` does not claim a live VM was timed.
+
+Next: [air-gap pack](/lab-ops/air-gap) if you need a closed network, or [license](/lab-ops/license).

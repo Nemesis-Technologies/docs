@@ -17,7 +17,7 @@
     "library": "lucide"
   },
   "banner": {
-    "content": "**Not production-ready.** **CUI never.** Postgres-first (STIG Postgres 16). No FedRAMP, CMMC PASS, or certified claims.",
+    "content": "**Not production-ready.** **CUI never.** Postgres-first (STIG Postgres 16). **Hub-pull compose ≠ air-gap.** No FedRAMP, CMMC PASS, or certified claims.",
     "dismissible": false,
     "type": "warning"
   },
@@ -40,6 +40,17 @@
           "first-scan/run-scan",
           "first-scan/export-ckl",
           "first-scan/waivers"
+        ]
+      },
+      {
+        "group": "Lab / air-gap ops",
+        "icon": "server",
+        "pages": [
+          "lab-ops/overview",
+          "lab-ops/lab-compose",
+          "lab-ops/air-gap",
+          "lab-ops/license",
+          "lab-ops/tool-family"
         ]
       },
       {
@@ -78,6 +89,16 @@
           { "label": "Run scan", "href": "/first-scan/run-scan" },
           { "label": "Export CKL", "href": "/first-scan/export-ckl" },
           { "label": "Waivers", "href": "/first-scan/waivers" }
+        ]
+      },
+      {
+        "header": "Lab / air-gap ops",
+        "items": [
+          { "label": "Path map", "href": "/lab-ops/overview" },
+          { "label": "Lab compose", "href": "/lab-ops/lab-compose" },
+          { "label": "Air-gap", "href": "/lab-ops/air-gap" },
+          { "label": "License", "href": "/lab-ops/license" },
+          { "label": "Tool family", "href": "/lab-ops/tool-family" }
         ]
       },
       {
