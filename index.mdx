@@ -1,0 +1,39 @@
+---
+title: "Nemesis Docs"
+description: "Public Admin, ISSO, and contractor DBA docs. Start the first-scan path for lab Postgres 16."
+keywords: ["nemesis", "admin", "isso", "contractor", "first scan"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+This site is the **public** customer surface for Nemesis: Admin, ISSO, and contractor DBA. It is not the internal engineer handbook. Product papers and install runbooks stay in the portal repo; this site summarizes them and links by path.
+
+The acceptance path is a **first scan you can complete from these pages**: install the lab stack, register a least-priv Postgres 16 target, queue a STIG scan, export CKL when findings exist, then record a waiver overlay.
+
+<Card title="First-scan path" icon="list-checks" href="/first-scan/overview">
+  Install → add target → run scan → export CKL → waivers. Architecture for a reviewer is linked at the end.
+</Card>
+
+## What this site covers
+
+| You are | Start here |
+| --- | --- |
+| Contractor DBA bringing up a lab | [Install](/first-scan/install), then [add a target](/first-scan/add-target) |
+| Operator running the first STIG scan | [Run scan](/first-scan/run-scan) |
+| ISSO exporting a checklist | [Export CKL](/first-scan/export-ckl) |
+| ISSO / Analyst recording a waiver | [Waivers](/first-scan/waivers) |
+| Reviewer asking where trust sits | [Architecture for reviewer](/architecture/for-reviewer) |
+
+## What this site does not claim
+
+- Production-ready on-prem, air-gap, or multi-cluster product.
+- CUI, confidential STIG packages, or a standalone XCCDF dump.
+- Full engine coverage (MySQL, Mongo, SQL Server, Oracle packs may exist in the engine; they are not this first-scan path).
+- FedRAMP, CMMC PASS, SOC 2, or any certification.
+- That empty Findings means the target is clean. If the lab-worker image was built without a GitHub token that can link `StartScan`, Findings stay empty honestly.
+
+## Cited portal tip
+
+Install, least-priv SQL, CKL, and waiver pages cite portal `main` at [`8daddb089a0785b3beead9b0dd309e053acfdbfd`](https://github.com/Nemesis-Technologies/portal/tree/8daddb089a0785b3beead9b0dd309e053acfdbfd). Confirm HEAD if you are reading later. Do not treat portal `docs/runbooks` as relocated into this repo.

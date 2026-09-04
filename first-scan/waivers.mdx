@@ -1,0 +1,65 @@
+---
+title: "Waivers"
+description: "POA&M and waiver overlay on Findings. Auditor can view, not approve."
+keywords: ["waiver", "poam", "auditor", "findings"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+POA&M and waiver live on the **Findings** row as a control-plane overlay. They do not rewrite engine `status` or `ckl_status`. An expired waiver flags the row; it does not PATCH the last scan to Open or Closed.
+
+Cite: portal [`docs/ADR-0014-poam-waiver.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/ADR-0014-poam-waiver.md) at `8daddb08` (NMS-45).
+
+Nav: **Findings**. There is no separate POA&M sidebar item.
+
+<Warning>
+  **Auditor cannot approve.** Auditor (and Operator) can view the overlay and export POA&M CSV. Create, edit, approve, and revoke require Admin or Analyst (`waivers.change`). No dual-control / four-eyes in this product.
+</Warning>
+
+## Record a plan or waiver
+
+<Steps>
+  <Step title="Open a Finding">
+    Select a stored row. The detail pane shows engine status, CKL status, and the overlay. Text on the page: engine status stays; CKL stays; waiver is an overlay.
+  </Step>
+  <Step title="Add a POA&M plan (optional)">
+    One optional plan per finding. Fields: owner (org user), planned date (UTC), milestone (free text). No extra status machine. No invented POA&M numbering scheme.
+  </Step>
+  <Step title="Add a waiver or operational exception">
+    One **active** waiver per finding. Kind is `waiver` or `operational_exception`. Justification is required. Approver is recorded as the Admin/Analyst who submits. Expiry is required (UTC).
+
+    Do not put a DSN, password, or vault material in the justification.
+  </Step>
+  <Step title="Watch expiry on the list">
+    Overlay states: `none`, `active` (`now < expires_at` and not revoked), `expired`, `revoked`. Expired shows as **Expired waiver** with `expires_at` on the Findings row. That is the “needs action again” signal. Engine `ckl_status` stays whatever the last scan stored (typically `Open` if the last result FAILed).
+  </Step>
+</Steps>
+
+Admin / Analyst can revoke. Revoke is a change-waiver action, not an engine write.
+
+## Who can do what
+
+| Action | Admin | Analyst | Operator | Auditor |
+| --- | --- | --- | --- | --- |
+| View plan / waiver on Findings | yes | yes | yes | **yes** |
+| Create / edit plan | yes | yes | no | **no** |
+| Create / approve / revoke waiver | yes | yes | no | **no** |
+| Export POA&M CSV | yes | yes | yes | **yes** |
+
+The Findings page states this in the form footer: Auditor can view and export; Auditor cannot create, edit, or approve.
+
+## Export
+
+**Export POA&M CSV** on Findings is org-scoped. Columns include finding id, check id, asset id, title, `ckl_status`, severity, plan owner / date / milestone, waiver state / kind / expiry. No DSN. CAT is omitted when it is null.
+
+The same overlay also lands in new [evidence packages](/first-scan/export-ckl) as `poam.csv` and `waivers.csv`.
+
+## Out of this path
+
+- Dual-control approval, official eMASS column names, and a waiver history table are not this product.
+- Estate dashboard expired counts are a different console surface, not required to finish first scan.
+- Worker and engine never see waivers. Cloud plane does not open a customer DB session to create one.
+
+Reviewer context: [Architecture for reviewer](/architecture/for-reviewer).

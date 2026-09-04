@@ -1,0 +1,151 @@
+---
+title: "Install"
+description: "Bring up the lab console and nmlw_ lab-worker. Compose is the default path; Helm is optional."
+keywords: ["install", "compose", "helm", "lab-worker", "nmlw"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+Default lab path: single-node Docker Compose. Optional path: first Helm chart **0.1.0** on a cluster you already operate. Both are lab installers. Neither is a timed drill. Neither is air-gap. Neither is backup.
+
+Cite, do not duplicate:
+
+- Compose: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/apps/self-hosted/LAB-INSTALL.md) at `8daddb08` (NMS-80 / ADR-0062).
+- Helm: portal [`apps/self-hosted/HELM-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/apps/self-hosted/HELM-INSTALL.md) at `8daddb08` (NMS-195 / ADR-0068). Honest n-1 notes live in sibling `HELM-UPGRADE.md` — this is the first chart; there is no prior Helm revision.
+
+<Warning>
+  The compose / chart control-plane database is **Postgres 17**. It is **not** the STIG target. ISSO demo targets stay **Postgres 16** community (engine fixtures), registered separately. Do not point the first scan at the control-plane database.
+</Warning>
+
+## What comes up
+
+Three processes. One node (compose) or one namespace (Helm). Lab only.
+
+1. **Control-plane UI** — the same `apps/cloud` Next.js console. Open `http://localhost:3000`.
+2. **Local control-plane Postgres 17** — console + findings store. Not live Supabase. Not the scan target.
+3. **`nmlw_` lab-worker** — outbound pull. `StartScan` in-process **only** when the image was built with a GitHub token that can read private `db_scan_engine` and `shared` (NMS-197). Lab DBs only.
+
+Customer-network `nmsp_` is **out** of this installer. Do not start a second scanner. Do not use root `compose.yaml` / `make up`. Do not use engine `lab/postgres` / `lab/sqlserver` / `lab/oracle` as this installer.
+
+## Prerequisites
+
+| Need | Why |
+| --- | --- |
+| Docker Engine + Compose v2 **or** `kubectl` + Helm v3 + a cluster you already have | Compose vs Helm |
+| Git, `curl`, `openssl`, `python3` | Clone + secrets + mint helper |
+| ~4 GiB RAM / ~10 GiB disk (compose) | Images + first Next.js compile |
+| Outbound HTTPS | Pull base images. This path is not air-gap. |
+| GitHub token (`GH_TOKEN`) | Fine-grained PAT, `contents:read` on private `db_scan_engine` **and** `shared`, so the default lab-worker image can link `StartScan`. Do not commit it. |
+| Open TCP **3000** on localhost | Console |
+
+Node and Go on the host are not required. This path does not clone `db_scan_engine` into the portal tree.
+
+## Compose (default)
+
+Work only under `apps/self-hosted/` after you clone portal at the cited tip (or later `origin/main` if Orchestrator has moved it).
+
+<Steps>
+  <Step title="Clone portal and enter the installer directory">
+    ```bash
+    git clone https://github.com/Nemesis-Technologies/portal.git
+    cd portal
+    git checkout 8daddb089a0785b3beead9b0dd309e053acfdbfd
+    cd apps/self-hosted
+    ```
+  </Step>
+  <Step title="Create distinct secrets">
+    Copy `.env.example` to `.env`. Generate **two different** values for `NEXTAUTH_SECRET` and `VAULT_LOCAL_KEY`. Never reuse one as the other. Leave `NEMESIS_LAB_WORKER_TOKEN` and `LAB_WORKER_ORG_ID` empty until you mint. Do not paste an `nmsp_` token. Do not put a database DSN in docs, tickets, or logs.
+  </Step>
+  <Step title="Start Postgres and the console">
+    ```bash
+    docker compose up -d --build postgres cloud
+    docker compose logs -f cloud
+    ```
+
+    Wait until `cloud` is healthy. First compile can take several minutes. Open **http://localhost:3000**. This stack runs Next.js as `NODE_ENV=development` so the locked recaptcha stub can auto-verify on signup. It is still a **lab** installer.
+  </Step>
+  <Step title="Create the first Owner">
+    Open **http://localhost:3000/signup**. The first user becomes Owner (`settings.manage`, `scans.run`, `assets.read`, `findings.read`). Confirm Assets / Scans / Findings chrome. Prefer signup on a clean VM. The optional `db:seed-auth` kit seed is **not** a customer login and is refused when `NODE_ENV=production`.
+  </Step>
+  <Step title="Build the lab-worker with a link token">
+    Export `GH_TOKEN` (do not commit). From `apps/self-hosted/`:
+
+    ```bash
+    docker compose build --build-arg GH_TOKEN="$GH_TOKEN" lab-worker
+    ```
+
+    Preferred from the portal repo root (BuildKit secret, not an image `ENV`):
+
+    ```bash
+    DOCKER_BUILDKIT=1 docker build \
+      --secret id=gh_token,env=GH_TOKEN \
+      -f apps/self-hosted/lab-worker.Dockerfile \
+      -t nemesis-lab-lab-worker \
+      .
+    ```
+
+    Without a token the image build **fails honestly**. Unlinked local `go run` still refuses `StartScan is not linked`. GitHub Actions does not yet hold this org secret — do not invent that Findings already run in CI.
+  </Step>
+  <Step title="Mint nmlw_ and start the worker">
+    Owner / Admin only. Auditor cannot mint. From `apps/self-hosted/`, after you can sign in:
+
+    ```bash
+    chmod +x mint-lab-worker.sh
+    ./mint-lab-worker.sh "$OWNER_EMAIL" "$OWNER_PASSWORD"
+    ```
+
+    Pass the Owner email and password you created at signup — do not commit them. The helper signs in, POSTs `/api/control-plane/lab-worker-credentials` with `{"name":"lab-node"}`, writes `NEMESIS_LAB_WORKER_TOKEN` + `LAB_WORKER_ORG_ID` into `.env`, and recreates the lab-worker. The token starts with `nmlw_` and is shown once. Export `GH_TOKEN` first; the helper refuses to build without it.
+  </Step>
+  <Step title="Verify pull">
+    ```bash
+    docker compose ps
+    docker compose logs lab-worker --tail=50
+    ```
+
+    Success: `postgres` healthy, `cloud` healthy, console on port 3000, lab-worker log `lab-worker pulling org <id> from http://cloud:3000`. Empty pull (`jobs: []`) is success when no job is queued. A 401/403 means remint. `docker compose config` must not mention `scan-worker` or `nmsp_`.
+  </Step>
+</Steps>
+
+Stop with `docker compose down` from `apps/self-hosted/`. Adding `-v` drops the lab control-plane volume — that is not a backup story.
+
+## Helm (optional)
+
+Use this only if you already have a Kubernetes cluster. Nemesis does not ship a cluster or a registry.
+
+<Steps>
+  <Step title="Build the two images from the portal root">
+    Tag `nemesis-lab-cloud:0.1.0` from `apps/self-hosted/cloud.Dockerfile`. Tag `nemesis-lab-worker:0.1.0` from `apps/self-hosted/lab-worker.Dockerfile` with the same `GH_TOKEN` / BuildKit `gh_token` rule as compose. Load images into **your** cluster the way that cluster already expects.
+  </Step>
+  <Step title="Create operator-held secrets">
+    Generate distinct `NEXTAUTH_SECRET` and `VAULT_LOCAL_KEY`. Prefer `secrets.existingSecret` so keys stay out of `helm get values`. Leave the lab-worker token and org id empty until you mint. Do not paste an `nmsp_` token. Do not publish a DSN in this site.
+  </Step>
+  <Step title="Install chart 0.1.0">
+    Chart home: `apps/self-hosted/helm/`. Recommended release `nemesis-lab` in namespace `nemesis-lab`. Then:
+
+    ```bash
+    kubectl -n nemesis-lab port-forward svc/nemesis-lab-cloud 3000:3000
+    ```
+
+    Open **http://localhost:3000** and create the first Owner the same way as compose.
+  </Step>
+  <Step title="Mint nmlw_ into the Secret">
+    Reuse `mint-lab-worker.sh` or `POST /api/control-plane/lab-worker-credentials`. The helper’s trailing `docker compose up` is the **compose** installer — ignore it on Helm. Write the minted token and org id into the existing Secret. Keep the **same** `VAULT_LOCAL_KEY`. Roll the lab-worker Deployment.
+  </Step>
+  <Step title="Verify pull">
+    Lab-worker log should show outbound pull from `http://nemesis-lab-cloud:3000`. No `nmsp_` Deployment. Empty pull is success when nothing is queued.
+  </Step>
+</Steps>
+
+<Note>
+  Helm upgrade-from-n-1 is documented in portal `apps/self-hosted/HELM-UPGRADE.md`. It is not a proven upgrade from a prior chart. There is no prior chart.
+</Note>
+
+## Honesty / out
+
+- Next.js never unwraps, never sees a DSN, never calls `StartScan`, never opens a customer or lab DB session.
+- Engine never persists secrets.
+- **Out of this installer:** production-ready, FedRAMP, CMMC, certified, air-gap Helm, backup absorb, timed install, customer on-prem shipped, multi-cluster, `nmsp_` in this stack, SQLite, a second UI, a second scanner.
+
+Next: [add a Postgres 16 target](/first-scan/add-target).

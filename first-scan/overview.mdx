@@ -1,0 +1,57 @@
+---
+title: "First-scan path"
+sidebarTitle: "Overview"
+description: "Map of install → add target → first scan → CKL → waivers for a contractor DBA."
+keywords: ["first scan", "path", "postgres 16", "stig"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+A contractor DBA should be able to finish this path from **this site alone**. Portal files are cited for operators who have repo access; they are not copied here as the home.
+
+<Steps>
+  <Step title="Install the lab stack">
+    Default path is single-node compose (`apps/self-hosted/LAB-INSTALL.md`). Helm is optional and is the first chart only (`HELM-INSTALL.md`). Both bring up the console, local control-plane Postgres 17, and an outbound-pull `nmlw_` lab-worker. Neither is production-ready. See [Install](/first-scan/install).
+  </Step>
+  <Step title="Add a Postgres 16 target">
+    Register a hostname and port on **Assets** (never a DSN). Vault a dedicated least-priv LOGIN. The first scan uses a **STIG** account, not classify role `nms_classify_sample`. See [Add a target](/first-scan/add-target).
+  </Step>
+  <Step title="Queue the first scan">
+    On **Scans**, pick the asset and **Run Scan**. That queues `stig-postgres-16`. The lab-worker pulls. `StartScan` runs in-process only when the worker image was built with a GitHub token that can link the engine. See [Run scan](/first-scan/run-scan).
+  </Step>
+  <Step title="Export CKL / CKLB">
+    On **Findings**, filter to the asset, then **Download CKL** or **Download CKLB**. Files are UNCLASSIFIED, host-only, from stored findings. CUI never. See [Export CKL](/first-scan/export-ckl).
+  </Step>
+  <Step title="Record a waiver if needed">
+    POA&M and waiver are an overlay on Findings. Auditor can view and export. Auditor cannot approve. See [Waivers](/first-scan/waivers).
+  </Step>
+</Steps>
+
+ISSO reviewers who need the plane split first can read [Architecture for reviewer](/architecture/for-reviewer) in parallel. It is not a prerequisite for the DBA steps.
+
+## What you will have at the end
+
+- A lab console at `http://localhost:3000` (compose) or the same URL via port-forward (Helm).
+- One registered lab Postgres 16 asset with a vaulted credential reference (opaque; no DSN in the console).
+- An on-demand scan job on the `scan` queue, policy `stig-postgres-16`.
+- Findings rows **if** the worker linked `StartScan` and the job succeeded. Empty Findings is an honest outcome when the engine is not linked.
+- CKL / CKLB from stored findings when an asset filter is set, plus an optional evidence zip on new generates.
+- Optional POA&M / waiver overlay that does **not** rewrite engine status.
+
+## Sources (cite, do not vendor)
+
+Portal `main` tip [`8daddb08`](https://github.com/Nemesis-Technologies/portal/tree/8daddb089a0785b3beead9b0dd309e053acfdbfd):
+
+| Topic | Portal path |
+| --- | --- |
+| Lab compose | [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/apps/self-hosted/LAB-INSTALL.md) (NMS-80 / ADR-0062) |
+| Helm | [`apps/self-hosted/HELM-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/apps/self-hosted/HELM-INSTALL.md) (NMS-195 / ADR-0068) |
+| Classify role SQL | [`docs/runbooks/nms-classify-sample-lab-role.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/runbooks/nms-classify-sample-lab-role.md) + [`.sql`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/runbooks/nms-classify-sample-lab-role.sql) (NMS-115 / ADR-0029) |
+| CKL export | [`docs/ADR-0035-ckl-portal-export.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/ADR-0035-ckl-portal-export.md) |
+| Waivers | [`docs/ADR-0014-poam-waiver.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/ADR-0014-poam-waiver.md) |
+
+<Note>
+  Portal ADRs stay in portal. This site summarizes for a customer reader. Do not paste ADR bodies into tickets or customer packets from this repo.
+</Note>

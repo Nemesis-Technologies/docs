@@ -1,0 +1,99 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Nemesis Docs",
+  "description": "Public Admin, ISSO, and contractor DBA docs for Nemesis. First-scan path for lab Postgres 16. Not the internal engineer handbook.",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/favicon.svg",
+    "dark": "/favicon.svg"
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "banner": {
+    "content": "**Not production-ready.** **CUI never.** Postgres-first (STIG Postgres 16). No FedRAMP, CMMC PASS, or certified claims.",
+    "dismissible": false,
+    "type": "warning"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start here",
+        "icon": "rocket",
+        "pages": [
+          "index"
+        ]
+      },
+      {
+        "group": "First scan",
+        "icon": "list-checks",
+        "pages": [
+          "first-scan/overview",
+          "first-scan/install",
+          "first-scan/add-target",
+          "first-scan/run-scan",
+          "first-scan/export-ckl",
+          "first-scan/waivers"
+        ]
+      },
+      {
+        "group": "Architecture",
+        "icon": "sitemap",
+        "pages": [
+          "architecture/for-reviewer"
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "type": "github",
+        "href": "https://github.com/Nemesis-Technologies/docs"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "First scan",
+      "href": "/first-scan/overview"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/Nemesis-Technologies"
+    },
+    "links": [
+      {
+        "header": "First scan",
+        "items": [
+          { "label": "Path map", "href": "/first-scan/overview" },
+          { "label": "Install", "href": "/first-scan/install" },
+          { "label": "Add target", "href": "/first-scan/add-target" },
+          { "label": "Run scan", "href": "/first-scan/run-scan" },
+          { "label": "Export CKL", "href": "/first-scan/export-ckl" },
+          { "label": "Waivers", "href": "/first-scan/waivers" }
+        ]
+      },
+      {
+        "header": "Reviewer",
+        "items": [
+          { "label": "Architecture", "href": "/architecture/for-reviewer" }
+        ]
+      }
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  }
+}
