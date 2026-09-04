@@ -19,7 +19,7 @@ Four names. They are **not** the same binary. Do not rebrand `dbscanner` or `dam
 | | Existing scripts | Future `nemesis` CLI | `dbscanner` | `dam-proxy` |
 | --- | --- | --- | --- | --- |
 | **What it is** | Bash + Compose under portal `apps/self-hosted/` | Planned thin operator CLI (Phase 1 wrap of these flows) | Engine / lab CLI | Protect DAM daemon |
-| **Shipped?** | Yes — cite [overview](/lab-ops/overview) | **No.** NMS-205 Backlog | Yes (eng/lab engine) | Yes (daemon) |
+| **Shipped?** | Yes — cite [overview](/self-hosted/overview) | **No.** NMS-205 Backlog | Yes (eng/lab engine) | Yes (daemon) |
 | **Who runs it** | Lab / IL operator | Future Admin operator | Engineer / lab | Operator of the DAM proxy process |
 | **Lab compose** | `docker compose` + `mint-lab-worker.sh` + [`LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) | Planned `lab` / `doctor` | Not this installer | Not this installer |
 | **Air-gap** | `pack-airgap.sh` + `compose.airgap.yaml` | Planned `airgap` | Not the pack path | Not the pack path |
@@ -31,9 +31,9 @@ Four names. They are **not** the same binary. Do not rebrand `dbscanner` or `dam
 
 Operator path on this site:
 
-1. [Lab compose](/lab-ops/lab-compose) — Hub-pull `compose.yaml`
-2. [Air-gap pack](/lab-ops/air-gap) — connected pack, sneakernet, no-pull compose
-3. [License](/lab-ops/license) — `nemesis-license.sh` gen-key / generate / validate
+1. [Lab compose](/self-hosted/lab-compose) — Hub-pull `compose.yaml`
+2. [Air-gap pack](/self-hosted/air-gap) — connected pack, sneakernet, no-pull compose
+3. [License](/self-hosted/license) — `nemesis-license.sh` gen-key / generate / validate
 
 Contractor DBA first scan after the lab is up: [First-scan path](/first-scan/overview).
 

@@ -43,11 +43,11 @@ Mintlify hosted preview (after this repo is connected in the Mintlify dashboard)
 | Export CKL | `first-scan/export-ckl.mdx` |
 | Waivers | `first-scan/waivers.mdx` |
 | Architecture for reviewer | `architecture/for-reviewer.mdx` |
-| Lab / air-gap path map | `lab-ops/overview.mdx` |
-| Lab compose | `lab-ops/lab-compose.mdx` |
-| Air-gap pack | `lab-ops/air-gap.mdx` |
-| License | `lab-ops/license.mdx` |
-| Tool family | `lab-ops/tool-family.mdx` |
+| Lab / closed-network path map | `self-hosted/overview.mdx` |
+| Lab compose | `self-hosted/lab-compose.mdx` |
+| Air-gap pack | `self-hosted/air-gap.mdx` |
+| License | `self-hosted/license.mdx` |
+| Tool family | `self-hosted/tool-family.mdx` |
 
 ## Branding
 
@@ -55,7 +55,7 @@ Favicon uses the same mark as the internal handbook (`docs-internal` `favicon.sv
 
 ## Sources of truth
 
-First-scan pages cite portal `main` tip `8daddb089a0785b3beead9b0dd309e053acfdbfd`. Lab / air-gap / license pages cite portal `main` after NMS-140 at `e11720843762a8a7c2be7f12e31ec0b44e3c0bda` (confirm HEAD if you are reading later):
+Cited against portal `main` after NMS-140 at `e11720843762a8a7c2be7f12e31ec0b44e3c0bda` (confirm HEAD if you are reading later):
 
 - Lab compose install: `apps/self-hosted/LAB-INSTALL.md` (NMS-80 / ADR-0062)
 - Helm / n-1 notes: `apps/self-hosted/HELM-INSTALL.md`

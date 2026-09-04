@@ -1,5 +1,5 @@
 ---
-title: "Lab / air-gap ops"
+title: "Lab / closed network"
 sidebarTitle: "Overview"
 description: "Operator path map: connected Hub-pull lab, then air-gap pack, then offline license. No nemesis CLI yet."
 keywords: ["lab ops", "air-gap", "license", "compose", "operator"]
@@ -19,17 +19,17 @@ There is **no** shipped `nemesis` CLI. [NMS-205](https://linear.app/nemesistech/
 
 <Steps>
   <Step title="Bring up the connected lab">
-    Single-node Docker Compose under `apps/self-hosted/`. Hub-pull path. Console + local control-plane Postgres 17 + outbound-pull `nmlw_` lab-worker. See [Lab compose](/lab-ops/lab-compose). First STIG scan after that is the [first-scan path](/first-scan/overview).
+    Single-node Docker Compose under `apps/self-hosted/`. Hub-pull path. Console + local control-plane Postgres 17 + outbound-pull `nmlw_` lab-worker. See [Lab compose](/self-hosted/lab-compose). First STIG scan after that is the [first-scan path](/first-scan/overview).
   </Step>
   <Step title="Pack for a closed network (optional)">
-    On a **connected** host, run `pack-airgap.sh`, sneakernet the tarball, `docker load`, then no-pull compose. See [Air-gap pack](/lab-ops/air-gap).
+    On a **connected** host, run `pack-airgap.sh`, sneakernet the tarball, `docker load`, then no-pull compose. See [Air-gap pack](/self-hosted/air-gap).
   </Step>
   <Step title="Generate and validate a license">
-    Offline Ed25519 file. Presence fail-closed, then schema + signature. No phone-home. See [License](/lab-ops/license).
+    Offline Ed25519 file. Presence fail-closed, then schema + signature. No phone-home. See [License](/self-hosted/license).
   </Step>
 </Steps>
 
-Which tool you are holding is on the [tool family](/lab-ops/tool-family) table. `dbscanner` is the eng/lab engine CLI. `dam-proxy` is the Protect DAM daemon. Neither is the future operator CLI.
+Which tool you are holding is on the [tool family](/self-hosted/tool-family) table. `dbscanner` is the eng/lab engine CLI. `dam-proxy` is the Protect DAM daemon. Neither is the future operator CLI.
 
 ## What you will have at the end
 

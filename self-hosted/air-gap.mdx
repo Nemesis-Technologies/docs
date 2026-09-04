@@ -9,7 +9,7 @@ import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 <HonestyLocks />
 
-Closed-network / IL checklist. Pack on a **connected** host, sneakernet media, `docker load`, then start with **no pull and no build**. This file does not claim a live IL was timed. Do not claim air-gap shipped as a customer product.
+Closed-network / IL checklist. Pack on a **connected** host, sneakernet media, `docker load`, then start with **no pull and no build**. There is **no** `*load-check*.sh` — load and health are `docker load` + `docker compose` as below. This file does not claim a live IL was timed. Do not claim air-gap shipped as a customer product.
 
 Cite, do not dump the full checklist: portal [`apps/self-hosted/AIR-GAP.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/AIR-GAP.md) at `e1172084` (NMS-81 / [ADR-0063](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0063-air-gap-disconnected.md)). Pack: [`pack-airgap.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/pack-airgap.sh). Override: [`compose.airgap.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.airgap.yaml).
 
@@ -61,9 +61,9 @@ Copy onto the closed network (media / courier — not this product):
 
 Closed network **never** clones GitHub, never `npm` / `go`, never Hub / GHCR, never DISA, never a license-server.
 
-Generate the license on a signing host first: [License](/lab-ops/license).
+Generate the license on a signing host first: [License](/self-hosted/license).
 
-## Load-check and no-pull bring-up
+## docker load and no-pull bring-up
 
 On the closed network, from the copied `apps/self-hosted/` directory:
 
@@ -88,9 +88,9 @@ docker compose -f compose.yaml -f compose.airgap.yaml up -d --no-build --pull ne
 
 `pull_policy: never` is on every service in `compose.airgap.yaml`. The `lab` network is `internal: true` (no outbound internet). Host port 3000 may stay for the console.
 
-Wait until `cloud` is healthy. Open **http://localhost:3000**. Signup + mint `nmlw_` as on [Lab compose](/lab-ops/lab-compose). When `NEMESIS_AIRGAP=1`, [`mint-lab-worker.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/mint-lab-worker.sh) uses `--no-build --pull never`. Do not paste `nmsp_`.
+Wait until `cloud` is healthy. Open **http://localhost:3000**. Signup + mint `nmlw_` as on [Lab compose](/self-hosted/lab-compose). When `NEMESIS_AIRGAP=1`, [`mint-lab-worker.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/mint-lab-worker.sh) uses `--no-build --pull never`. Do not paste `nmsp_`.
 
-Missing, empty, unreadable, or directory-mounted license → **refuse to start**. See [License](/lab-ops/license).
+Missing, empty, unreadable, or directory-mounted license → **refuse to start**. See [License](/self-hosted/license).
 
 ## Health on the IL
 

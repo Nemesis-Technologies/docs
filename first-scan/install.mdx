@@ -8,12 +8,12 @@ import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 <HonestyLocks />
 
-Default lab path: single-node Docker Compose. Optional path: first Helm chart **0.1.0** on a cluster you already operate. Both are lab installers. Neither is a timed drill. Neither is air-gap. Neither is backup. **Hub-pull compose ≠ air-gap** — closed-network pack / load is [Air-gap pack](/lab-ops/air-gap).
+Default lab path: single-node Docker Compose. Optional path: first Helm chart **0.1.0** on a cluster you already operate. Both are lab installers. Neither is a timed drill. Neither is air-gap. Neither is backup. **Hub-pull compose ≠ air-gap** — closed-network pack / load is [Air-gap pack](/self-hosted/air-gap).
 
 Cite, do not duplicate:
 
-- Compose: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/apps/self-hosted/LAB-INSTALL.md) at `8daddb08` (NMS-80 / ADR-0062).
-- Helm: portal [`apps/self-hosted/HELM-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/apps/self-hosted/HELM-INSTALL.md) at `8daddb08` (NMS-195 / ADR-0068). Honest n-1 notes live in sibling `HELM-UPGRADE.md` — this is the first chart; there is no prior Helm revision.
+- Compose: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) at `e1172084` (NMS-80 / ADR-0062).
+- Helm: portal [`apps/self-hosted/HELM-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/HELM-INSTALL.md) at `e1172084` (NMS-195 / ADR-0068). Honest n-1 notes live in sibling `HELM-UPGRADE.md` — this is the first chart; there is no prior Helm revision.
 
 <Warning>
   The compose / chart control-plane database is **Postgres 17**. It is **not** the STIG target. ISSO demo targets stay **Postgres 16** community (engine fixtures), registered separately. Do not point the first scan at the control-plane database.
@@ -51,7 +51,7 @@ Work only under `apps/self-hosted/` after you clone portal at the cited tip (or 
     ```bash
     git clone https://github.com/Nemesis-Technologies/portal.git
     cd portal
-    git checkout 8daddb089a0785b3beead9b0dd309e053acfdbfd
+    git checkout e11720843762a8a7c2be7f12e31ec0b44e3c0bda
     cd apps/self-hosted
     ```
   </Step>

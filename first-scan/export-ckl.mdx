@@ -10,7 +10,7 @@ import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 Portal writes CKL XML and CKLB JSON from **stored** Findings and Asset rows. No engine call. No live rescan. No `StartScan` on the cloud plane.
 
-Cite: portal [`docs/ADR-0035-ckl-portal-export.md`](https://github.com/Nemesis-Technologies/portal/blob/8daddb089a0785b3beead9b0dd309e053acfdbfd/docs/ADR-0035-ckl-portal-export.md) at `8daddb08` (NMS-43). Evidence zip members: portal `apps/cloud/lib/control-plane/evidence-package-format.ts` (NMS-76 / ADR-0020, CKL members on **new** generates).
+Cite: portal [`docs/ADR-0035-ckl-portal-export.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0035-ckl-portal-export.md) at `e1172084` (NMS-43). Evidence zip members: portal `apps/cloud/lib/control-plane/evidence-package-format.ts` (NMS-76 / ADR-0020, CKL members on **new** generates).
 
 <Warning>
   **CUI never.** These files are not a DISA content pack and not a raw XCCDF dump. Marking is UNCLASSIFIED / host-only. DSN-looking hosts are stripped. Do not store or ship confidential / CUI STIG packages.

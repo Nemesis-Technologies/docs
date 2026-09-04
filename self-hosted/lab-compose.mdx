@@ -8,12 +8,12 @@ import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 <HonestyLocks />
 
-Connected lab path: single-node Docker Compose under `apps/self-hosted/`. This is the **Hub-pull** installer. It is not air-gap. It is not Helm. It is not a timed drill.
+Connected lab path: single-node Docker Compose under `apps/self-hosted/`. This is the **Hub-pull** installer. It is not air-gap. It is not Helm. It is not a timed drill. There is **no** bring-up / health wrapper script — use `docker compose` as below.
 
 Cite, do not duplicate the full runbook: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) at `e1172084` (NMS-80 / [ADR-0062](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0062-lab-compose-installer.md)). File: [`compose.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.yaml).
 
 <Warning>
-  **Hub-pull compose ≠ air-gap.** This file pulls `postgres:17` and builds from Dockerfiles. Closed-network operators use [Air-gap pack](/lab-ops/air-gap). Do not treat a successful `docker compose up --build` as an IL bring-up.
+  **Hub-pull compose ≠ air-gap.** This file pulls `postgres:17` and builds from Dockerfiles. Closed-network operators use [Air-gap pack](/self-hosted/air-gap). Do not treat a successful `docker compose up --build` as an IL bring-up.
 </Warning>
 
 The contractor DBA first-scan path (add target → scan → CKL) starts after this stack is healthy: [Install](/first-scan/install) then [overview](/first-scan/overview). This page is bring-up / health / down only.
@@ -119,4 +119,4 @@ Adding `-v` drops the lab control-plane volume. That is not a backup story.
 - **Out:** production-ready, FedRAMP, CMMC, certified, air-gap, Helm (see [Install](/first-scan/install) for the optional first chart), backup absorb, `nmsp_` in this stack, a second scanner.
 - Do not invent measured install timings. `LAB-INSTALL.md` does not claim a live VM was timed.
 
-Next: [air-gap pack](/lab-ops/air-gap) if you need a closed network, or [license](/lab-ops/license).
+Next: [air-gap pack](/self-hosted/air-gap) if you need a closed network, or [license](/self-hosted/license).

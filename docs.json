@@ -43,14 +43,14 @@
         ]
       },
       {
-        "group": "Lab / air-gap ops",
+        "group": "Lab / closed network",
         "icon": "server",
         "pages": [
-          "lab-ops/overview",
-          "lab-ops/lab-compose",
-          "lab-ops/air-gap",
-          "lab-ops/license",
-          "lab-ops/tool-family"
+          "self-hosted/overview",
+          "self-hosted/lab-compose",
+          "self-hosted/air-gap",
+          "self-hosted/license",
+          "self-hosted/tool-family"
         ]
       },
       {
@@ -92,13 +92,13 @@
         ]
       },
       {
-        "header": "Lab / air-gap ops",
+        "header": "Lab / closed network",
         "items": [
-          { "label": "Path map", "href": "/lab-ops/overview" },
-          { "label": "Lab compose", "href": "/lab-ops/lab-compose" },
-          { "label": "Air-gap", "href": "/lab-ops/air-gap" },
-          { "label": "License", "href": "/lab-ops/license" },
-          { "label": "Tool family", "href": "/lab-ops/tool-family" }
+          { "label": "Path map", "href": "/self-hosted/overview" },
+          { "label": "Lab compose", "href": "/self-hosted/lab-compose" },
+          { "label": "Air-gap", "href": "/self-hosted/air-gap" },
+          { "label": "License", "href": "/self-hosted/license" },
+          { "label": "Tool family", "href": "/self-hosted/tool-family" }
         ]
       },
       {

@@ -16,7 +16,7 @@ Cite: portal [`apps/self-hosted/nemesis-license.sh`](https://github.com/Nemesis-
   Private signing key is operator-held. Do not commit it. Do not put it in the air-gap image or on the IL. Sneakernet the **public** verify key only.
 </Warning>
 
-Connected Hub-pull [lab compose](/lab-ops/lab-compose) does not require a license file. Air-gap compose **does** (presence fail-closed).
+Connected Hub-pull [lab compose](/self-hosted/lab-compose) does not require a license file. Air-gap compose **does** (presence fail-closed).
 
 ## Two checks (do not skip either)
 
@@ -74,7 +74,7 @@ Owner / Admin `settings.manage` on a signing host can also produce a file. Same 
 
 ## Air-gap start (gate + validate)
 
-On the IL, after [pack / load](/lab-ops/air-gap):
+On the IL, after [pack / load](/self-hosted/air-gap):
 
 ```bash
 export NEMESIS_LICENSE_FILE=/path/to/local/nemesis.lic
@@ -99,4 +99,4 @@ Presence-only success is not enough if the validator is missing — the gate fai
 - This is not a customer entitlement portal and not FedRAMP/CMMC PASS.
 - The future `nemesis license` verb is [NMS-205](https://linear.app/nemesistech/issue/NMS-205/build-nemesis-cli-phase-1-lab-air-gap-license-operator) Backlog. It is **not shipped**. Use these scripts.
 
-See [tool family](/lab-ops/tool-family) if you are holding `dbscanner` or `dam-proxy` by mistake.
+See [tool family](/self-hosted/tool-family) if you are holding `dbscanner` or `dam-proxy` by mistake.
