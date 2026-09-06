@@ -17,7 +17,7 @@ The acceptance path is a **first scan you can complete from these pages**: insta
     Install → add target → run scan → export CKL → waivers. Architecture for a reviewer is linked at the end.
   </Card>
   <Card title="Lab / closed network" icon="server" href="/self-hosted/overview">
-    Connected Hub-pull compose, air-gap pack / load, offline license. Scripts only — no `nemesis` CLI yet.
+    Connected Hub-pull compose, air-gap pack / load, offline license. Phase 2 `nemesis` is GET-only.
   </Card>
 </Columns>
 
@@ -27,6 +27,7 @@ The acceptance path is a **first scan you can complete from these pages**: insta
 | --- | --- |
 | Contractor DBA bringing up a lab | [Install](/first-scan/install), then [add a target](/first-scan/add-target) |
 | Operator running connected compose / air-gap pack / license | [Lab / closed network](/self-hosted/overview) |
+| Operator using Phase 2 `nemesis` GET verbs | [CLI command × role](/self-hosted/cli-roles) |
 | Operator running the first STIG scan | [Run scan](/first-scan/run-scan) |
 | ISSO exporting a checklist | [Export CKL](/first-scan/export-ckl) |
 | Sales / design partner sharing a lab sample | [Lab demo pack](/first-scan/demo-pack) |
@@ -36,7 +37,7 @@ The acceptance path is a **first scan you can complete from these pages**: insta
 ## What this site does not claim
 
 - Production-ready on-prem, air-gap shipped as a customer product, or multi-cluster. **Hub-pull compose ≠ air-gap.**
-- A shipped `nemesis` / `nemesis-cli` binary ([NMS-205](https://linear.app/nemesistech/issue/NMS-205/build-nemesis-cli-phase-1-lab-air-gap-license-operator) is Backlog).
+- A production-ready `nemesis` CLI, StartScan from the CLI, or writes. Phase 2 is **GET-only**. Role tokens exist; see [CLI command × role](/self-hosted/cli-roles).
 - CUI, confidential STIG packages, or a standalone XCCDF dump.
 - Full engine coverage (MySQL, Mongo, SQL Server, Oracle packs may exist in the engine; they are not this first-scan path).
 - FedRAMP, CMMC PASS, SOC 2, or any certification.
