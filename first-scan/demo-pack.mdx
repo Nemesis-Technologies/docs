@@ -1,0 +1,45 @@
+---
+title: "Lab demo pack"
+sidebarTitle: "Demo pack"
+description: "Pointer to the sanitized synthetic Postgres lab CKL, CKLB, and one-page scorecard. Not customer data. CUI never."
+keywords: ["demo pack", "sample ckl", "cklb", "scorecard", "lab", "stig viewer"]
+---
+
+import HonestyLocks from "/snippets/honesty-locks.mdx";
+
+<HonestyLocks />
+
+This page is a **pointer**. The binaries are not in this Mintlify repo. Sales and design partners share the committed pack in portal; they do not download a customer Findings export from here.
+
+<Warning>
+  **Synthetic Postgres lab only.** Not customer data. **CUI never.** Not production-ready. Not FedRAMP, CMMC, or ATO. Not a DISA content pack. Do not treat this pack as a clean bill of health or a certified result.
+</Warning>
+
+## Where the pack lives
+
+The pack ships with [NMS-89](https://linear.app/nemesistech/issue/NMS-89/sample-ckl-scorecard-for-sales-design-partners) under portal [`docs/demo/`](https://github.com/Nemesis-Technologies/portal/tree/main/docs/demo). The portal PR may land in the same wave as this page. The path is the home even if `main` is still catching up.
+
+This site does not host `.ckl`, `.cklb`, or the scorecard PDF.
+
+## What is in the pack
+
+- Sample **CKL** (STIG Viewer checklist XML)
+- Matching **CKLB** (JSON)
+- One-page **lab scorecard**
+- Regen **README** (engine lab primary; portal first-scan export secondary)
+
+The sample CKL is intended to open in current **DISA STIG Viewer / Workbench** without schema errors. That is a viewer-open check. It is not a Viewer PASS.
+
+## Product download (your Findings)
+
+To export CKL / CKLB from **stored** Findings in the console, use [Export CKL](/first-scan/export-ckl). That is the product path. This demo pack is a committed lab sample, not a substitute for that download.
+
+## Honesty
+
+- Synthetic Postgres lab (`stig-postgres-16` / engine lab) only.
+- Not customer data. Not an anonymized production dump.
+- **CUI never.** UNCLASSIFIED / host-only.
+- Not production-ready.
+- Not FedRAMP / CMMC / ATO.
+- Not official DISA / SCAP / a content-pack distribution.
+- Do not treat Viewer-inferred CAT from Severity as our map.

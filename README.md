@@ -41,6 +41,7 @@ Mintlify hosted preview (after this repo is connected in the Mintlify dashboard)
 | Add target | `first-scan/add-target.mdx` |
 | First scan | `first-scan/run-scan.mdx` |
 | Export CKL | `first-scan/export-ckl.mdx` |
+| Lab demo pack | `first-scan/demo-pack.mdx` |
 | Waivers | `first-scan/waivers.mdx` |
 | Architecture for reviewer | `architecture/for-reviewer.mdx` |
 | Lab / closed-network path map | `self-hosted/overview.mdx` |
