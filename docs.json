@@ -51,7 +51,8 @@
           "self-hosted/lab-compose",
           "self-hosted/air-gap",
           "self-hosted/license",
-          "self-hosted/tool-family"
+          "self-hosted/tool-family",
+          "self-hosted/cli-roles"
         ]
       },
       {
@@ -100,7 +101,8 @@
           { "label": "Lab compose", "href": "/self-hosted/lab-compose" },
           { "label": "Air-gap", "href": "/self-hosted/air-gap" },
           { "label": "License", "href": "/self-hosted/license" },
-          { "label": "Tool family", "href": "/self-hosted/tool-family" }
+          { "label": "Tool family", "href": "/self-hosted/tool-family" },
+          { "label": "CLI roles", "href": "/self-hosted/cli-roles" }
         ]
       },
       {

@@ -49,6 +49,7 @@ Mintlify hosted preview (after this repo is connected in the Mintlify dashboard)
 | Air-gap pack | `self-hosted/air-gap.mdx` |
 | License | `self-hosted/license.mdx` |
 | Tool family | `self-hosted/tool-family.mdx` |
+| CLI command × role | `self-hosted/cli-roles.mdx` |
 
 ## Branding
 
@@ -65,5 +66,7 @@ Cited against portal `main` after NMS-140 at `e11720843762a8a7c2be7f12e31ec0b44e
 - Least-priv classify role: `docs/runbooks/nms-classify-sample-lab-role.md` and `.sql`
 - CKL export design: `docs/ADR-0035-ckl-portal-export.md`
 - Waivers / POA&M: `docs/ADR-0014-poam-waiver.md`
+- Role-bound API tokens: `docs/ADR-0072-role-based-api-tokens.md` (cite portal `92ead642` / NMS-207 / NMS-211)
+- Identity / RBAC matrix: `docs/ADR-0001-identity-rbac.md`
 
 Do not relocate those portal files here.
