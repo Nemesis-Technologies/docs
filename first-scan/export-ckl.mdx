@@ -40,7 +40,7 @@ Nav: **Findings**. Buttons hang on existing `findings.read` (Admin, Analyst, Ope
 
 ## What is in the file (honest)
 
-- **Severity** matches the console row (`high` / `medium` / `low`). We do not invent severity from CAT, and we do not invent CAT from severity.
+- **Severity** matches the console row (`high` / `medium` / `low`). We do not invent severity from CAT, and we do not invent CAT from severity. Viewer-inferred CAT from Severity is **not** our map.
 - **CAT** is Nemesis-authored for four V-IDs only (V-233548, V-233596, V-233602, V-233606 = I). Unmapped V-IDs and `MANUAL-*` stay `cat` empty. These four I’s are **not** official DISA CAT.
 - **`stig_id`** is filled from official **non-CUI** XCCDF embedded in the product when the check is found. Missing stays null (fail closed). There is no public dump route.
 - Comments / details come from stored evidence, already redacted at ingest and redacted again on write. No DSN.
@@ -68,5 +68,9 @@ Also on Findings (not CKL, not claimed as STIG Viewer input): **Download results
 - Not official DISA / SCAP / a content-pack distribution.
 - Engine CLI `WriteCKL` is a separate path and still does not pass through CAT / official `stig_id`. Product export is portal.
 - Do not treat Viewer-inferred CAT from Severity as our map.
+
+## Lab demo pack
+
+A committed synthetic-lab sample (CKL + CKLB + one-page scorecard) lives in portal, not in this repo. See [Lab demo pack](/first-scan/demo-pack). That pack is not your Findings download.
 
 Next: [waivers](/first-scan/waivers).

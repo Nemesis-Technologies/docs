@@ -39,6 +39,7 @@
           "first-scan/add-target",
           "first-scan/run-scan",
           "first-scan/export-ckl",
+          "first-scan/demo-pack",
           "first-scan/waivers"
         ]
       },
@@ -88,6 +89,7 @@
           { "label": "Add target", "href": "/first-scan/add-target" },
           { "label": "Run scan", "href": "/first-scan/run-scan" },
           { "label": "Export CKL", "href": "/first-scan/export-ckl" },
+          { "label": "Lab demo pack", "href": "/first-scan/demo-pack" },
           { "label": "Waivers", "href": "/first-scan/waivers" }
         ]
       },
