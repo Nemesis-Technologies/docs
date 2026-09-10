@@ -42,7 +42,7 @@ Default lab policy is `stig-postgres-16` on queue `scan`. Weekly cron default is
 
 | Image build | What happens |
 | --- | --- |
-| Built with `GH_TOKEN` / BuildKit `gh_token` that can read private `db_scan_engine` and `shared` (NMS-197) | Default lab-worker image **links** `StartScan` at build (copy `engine_link.go.example` inside the image, then `go get` the engine pin). Portal does **not** vendor the engine into git. |
+| Built with `GH_TOKEN` / BuildKit `gh_token` that can read private `rue_scan_engine` and `shared` (NMS-197) | Default lab-worker image **links** `StartScan` at build (copy `engine_link.go.example` inside the image, then `go get` the engine pin). Portal does **not** vendor the engine into git. |
 | No token | Image build **fails honestly**. |
 | Unlinked local `go run` / portal CI `go test` without the private module | Refuses `StartScan is not linked`. That is OK. |
 

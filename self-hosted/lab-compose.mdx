@@ -24,7 +24,7 @@ Three processes. One node. Lab only.
 
 1. **Control-plane UI** — the same `apps/cloud` Next.js console. Open `http://localhost:3000`.
 2. **Local control-plane Postgres 17** — console + findings store. Not the STIG target. ISSO demo targets stay Postgres 16, registered separately.
-3. **`nmlw_` lab-worker** — outbound pull from `http://cloud:3000`. `StartScan` in-process only when the image was built with a GitHub token that can read private `db_scan_engine` and `shared`.
+3. **`nmlw_` lab-worker** — outbound pull from `http://cloud:3000`. `StartScan` in-process only when the image was built with a GitHub token that can read private `rue_scan_engine` and `shared`.
 
 Customer-network `nmsp_` is **out**. Do not use root `compose.yaml` / `make up`. Do not use engine `lab/postgres` as this installer.
 
@@ -36,7 +36,7 @@ Customer-network `nmsp_` is **out**. Do not use root `compose.yaml` / `make up`.
 | Git, `curl`, `openssl`, `python3` | Clone + secrets + mint helper |
 | ~4 GiB RAM / ~10 GiB disk | Images + first Next.js compile |
 | Outbound HTTPS | Pull base images. This path is not air-gap. |
-| GitHub token (`GH_TOKEN`) | Fine-grained PAT, `contents:read` on private `db_scan_engine` **and** `shared`. Do not commit it. |
+| GitHub token (`GH_TOKEN`) | Fine-grained PAT, `contents:read` on private `rue_scan_engine` **and** `shared`. Do not commit it. |
 | Open TCP **3000** on localhost | Console |
 
 Node and Go on the host are not required.
