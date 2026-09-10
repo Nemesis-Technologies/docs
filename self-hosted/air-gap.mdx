@@ -29,8 +29,8 @@ git clone https://github.com/Nemesis-Technologies/portal.git
 cd portal
 git checkout e11720843762a8a7c2be7f12e31ec0b44e3c0bda
 cd apps/self-hosted
-# ENGINE_SRC is a local checkout of db_scan_engine (pack-time copy only).
-ENGINE_SRC=/path/to/db_scan_engine ./pack-airgap.sh
+# ENGINE_SRC is a local checkout of rue_scan_engine (pack-time copy only).
+ENGINE_SRC=/path/to/rue_scan_engine ./pack-airgap.sh
 ```
 
 `pack-airgap.sh` builds and `docker save`s:
@@ -43,7 +43,7 @@ ENGINE_SRC=/path/to/db_scan_engine ./pack-airgap.sh
 
 Optional: `OUT=/path/to/nemesis-lab-airgap-images.tar` and `SHARED_SRC=/path/to/shared`. Default output is `apps/self-hosted/nemesis-lab-airgap-images.tar`.
 
-Pack-time copies `db_scan_engine` into a **gitignored** `.airgap-pack/` stage. Do not commit that stage. Do not vendor the engine into portal git. Portal CI still must not fetch the engine.
+Pack-time copies `rue_scan_engine` into a **gitignored** `.airgap-pack/` stage. Do not commit that stage. Do not vendor the engine into portal git. Portal CI still must not fetch the engine.
 
 ## Sneakernet
 

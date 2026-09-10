@@ -32,7 +32,7 @@ flowchart LR
 | Plane | What it owns | What it must not do |
 | --- | --- | --- |
 | **Control plane** (`apps/cloud`) | Identity, RBAC, vault ciphertext, job API, findings store, CKL export, waiver overlay, console | Open a session to the customer or lab DB. Call `StartScan` from Next.js. Unwrap a DSN in the browser. |
-| **Scan plane** (lab-worker + `db_scan_engine`) | DB session, check execution, report emit | Persist secrets. Import portal. Use cloud KMS / Supabase types. |
+| **Scan plane** (lab-worker + `rue_scan_engine`) | DB session, check execution, report emit | Persist secrets. Import portal. Use cloud KMS / Supabase types. |
 
 The browser never talks to the engine or the target database.
 
