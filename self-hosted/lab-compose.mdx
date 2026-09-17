@@ -10,7 +10,7 @@ import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 Connected lab path: single-node Docker Compose under `apps/self-hosted/`. This is the **Hub-pull** installer. It is not air-gap. It is not Helm. It is not a timed drill. There is **no** bring-up / health wrapper script — use `docker compose` as below.
 
-Cite, do not duplicate the full runbook: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) at `e1172084` (NMS-80 / [ADR-0062](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0062-lab-compose-installer.md)). File: [`compose.yaml`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/compose.yaml).
+Cite, do not duplicate the full runbook: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/LAB-INSTALL.md) at `144e0f9d` (NMS-80 / [ADR-0062](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/docs/ADR-0062-lab-compose-installer.md)). File: [`compose.yaml`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/compose.yaml).
 
 <Warning>
   **Hub-pull compose ≠ air-gap.** This file pulls `postgres:17` and builds from Dockerfiles. Closed-network operators use [Air-gap pack](/self-hosted/air-gap). Do not treat a successful `docker compose up --build` as an IL bring-up.
@@ -50,12 +50,12 @@ Work only under `apps/self-hosted/` after you clone portal at the cited tip (or 
     ```bash
     git clone https://github.com/Nemesis-Technologies/portal.git
     cd portal
-    git checkout e11720843762a8a7c2be7f12e31ec0b44e3c0bda
+    git checkout 144e0f9d53f815c590f9513af31150bc557a1ec5
     cd apps/self-hosted
     ```
   </Step>
   <Step title="Create distinct secrets">
-    Copy `.env.example` to `.env`. Generate **two different** values for `NEXTAUTH_SECRET` and `VAULT_LOCAL_KEY`. Never reuse one as the other. Leave `NEMESIS_LAB_WORKER_TOKEN` and `LAB_WORKER_ORG_ID` empty until you mint. Do not paste an `nmsp_` token. Do not put a database DSN in docs, tickets, or logs.
+    Copy `.env.example` to `.env`. Generate **two different** values for `NEXTAUTH_SECRET` and `VAULT_LOCAL_KEY`. Never reuse one as the other. Leave `MAJUTSU_LAB_WORKER_TOKEN` and `LAB_WORKER_ORG_ID` empty until you mint. Do not paste an `nmsp_` token. Do not put a database DSN in docs, tickets, or logs.
 
     ```bash
     cp .env.example .env
@@ -83,7 +83,7 @@ Work only under `apps/self-hosted/` after you clone portal at the cited tip (or 
     ./mint-lab-worker.sh "$OWNER_EMAIL" "$OWNER_PASSWORD"
     ```
 
-    Pass the Owner email and password you created at signup — do not commit them. Helper: [`mint-lab-worker.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/mint-lab-worker.sh). The token starts with `nmlw_` and is shown once. Without `GH_TOKEN` the image build **fails honestly**.
+    Pass the Owner email and password you created at signup — do not commit them. Helper: [`mint-lab-worker.sh`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/mint-lab-worker.sh). The token starts with `nmlw_` and is shown once. Without `GH_TOKEN` the image build **fails honestly**.
   </Step>
 </Steps>
 

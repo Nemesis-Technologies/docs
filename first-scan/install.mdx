@@ -12,8 +12,8 @@ Default lab path: single-node Docker Compose. Optional path: first Helm chart **
 
 Cite, do not duplicate:
 
-- Compose: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) at `e1172084` (NMS-80 / ADR-0062).
-- Helm: portal [`apps/self-hosted/HELM-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/HELM-INSTALL.md) at `e1172084` (NMS-195 / ADR-0068). Honest n-1 notes live in sibling `HELM-UPGRADE.md` — this is the first chart; there is no prior Helm revision.
+- Compose: portal [`apps/self-hosted/LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/LAB-INSTALL.md) at `144e0f9d` (NMS-80 / ADR-0062).
+- Helm: portal [`apps/self-hosted/HELM-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/HELM-INSTALL.md) at `144e0f9d` (NMS-195 / ADR-0068). Honest n-1 notes live in sibling `HELM-UPGRADE.md` — this is the first chart; there is no prior Helm revision.
 
 <Warning>
   The compose / chart control-plane database is **Postgres 17**. It is **not** the STIG target. ISSO demo targets stay **Postgres 16** community (engine fixtures), registered separately. Do not point the first scan at the control-plane database.
@@ -51,12 +51,12 @@ Work only under `apps/self-hosted/` after you clone portal at the cited tip (or 
     ```bash
     git clone https://github.com/Nemesis-Technologies/portal.git
     cd portal
-    git checkout e11720843762a8a7c2be7f12e31ec0b44e3c0bda
+    git checkout 144e0f9d53f815c590f9513af31150bc557a1ec5
     cd apps/self-hosted
     ```
   </Step>
   <Step title="Create distinct secrets">
-    Copy `.env.example` to `.env`. Generate **two different** values for `NEXTAUTH_SECRET` and `VAULT_LOCAL_KEY`. Never reuse one as the other. Leave `NEMESIS_LAB_WORKER_TOKEN` and `LAB_WORKER_ORG_ID` empty until you mint. Do not paste an `nmsp_` token. Do not put a database DSN in docs, tickets, or logs.
+    Copy `.env.example` to `.env`. Generate **two different** values for `NEXTAUTH_SECRET` and `VAULT_LOCAL_KEY`. Never reuse one as the other. Leave `MAJUTSU_LAB_WORKER_TOKEN` and `LAB_WORKER_ORG_ID` empty until you mint. Do not paste an `nmsp_` token. Do not put a database DSN in docs, tickets, or logs.
   </Step>
   <Step title="Start Postgres and the console">
     ```bash
@@ -82,7 +82,7 @@ Work only under `apps/self-hosted/` after you clone portal at the cited tip (or 
     DOCKER_BUILDKIT=1 docker build \
       --secret id=gh_token,env=GH_TOKEN \
       -f apps/self-hosted/lab-worker.Dockerfile \
-      -t nemesis-lab-lab-worker \
+      -t majutsu-lab-lab-worker \
       .
     ```
 
@@ -96,7 +96,7 @@ Work only under `apps/self-hosted/` after you clone portal at the cited tip (or 
     ./mint-lab-worker.sh "$OWNER_EMAIL" "$OWNER_PASSWORD"
     ```
 
-    Pass the Owner email and password you created at signup — do not commit them. The helper signs in, POSTs `/api/control-plane/lab-worker-credentials` with `{"name":"lab-node"}`, writes `NEMESIS_LAB_WORKER_TOKEN` + `LAB_WORKER_ORG_ID` into `.env`, and recreates the lab-worker. The token starts with `nmlw_` and is shown once. Export `GH_TOKEN` first; the helper refuses to build without it.
+    Pass the Owner email and password you created at signup — do not commit them. The helper signs in, POSTs `/api/control-plane/lab-worker-credentials` with `{"name":"lab-node"}`, writes `MAJUTSU_LAB_WORKER_TOKEN` + `LAB_WORKER_ORG_ID` into `.env`, and recreates the lab-worker. The token starts with `nmlw_` and is shown once. Export `GH_TOKEN` first; the helper refuses to build without it.
   </Step>
   <Step title="Verify pull">
     ```bash
@@ -112,20 +112,20 @@ Stop with `docker compose down` from `apps/self-hosted/`. Adding `-v` drops the 
 
 ## Helm (optional)
 
-Use this only if you already have a Kubernetes cluster. Nemesis does not ship a cluster or a registry.
+Use this only if you already have a Kubernetes cluster. Majutsu does not ship a cluster or a registry.
 
 <Steps>
   <Step title="Build the two images from the portal root">
-    Tag `nemesis-lab-cloud:0.1.0` from `apps/self-hosted/cloud.Dockerfile`. Tag `nemesis-lab-worker:0.1.0` from `apps/self-hosted/lab-worker.Dockerfile` with the same `GH_TOKEN` / BuildKit `gh_token` rule as compose. Load images into **your** cluster the way that cluster already expects.
+    Tag `majutsu-lab-cloud:0.1.0` from `apps/self-hosted/cloud.Dockerfile`. Tag `majutsu-lab-worker:0.1.0` from `apps/self-hosted/lab-worker.Dockerfile` with the same `GH_TOKEN` / BuildKit `gh_token` rule as compose. Load images into **your** cluster the way that cluster already expects.
   </Step>
   <Step title="Create operator-held secrets">
     Generate distinct `NEXTAUTH_SECRET` and `VAULT_LOCAL_KEY`. Prefer `secrets.existingSecret` so keys stay out of `helm get values`. Leave the lab-worker token and org id empty until you mint. Do not paste an `nmsp_` token. Do not publish a DSN in this site.
   </Step>
   <Step title="Install chart 0.1.0">
-    Chart home: `apps/self-hosted/helm/`. Recommended release `nemesis-lab` in namespace `nemesis-lab`. Then:
+    Chart home: `apps/self-hosted/helm/`. Recommended release `majutsu-lab` in namespace `majutsu-lab`. Then:
 
     ```bash
-    kubectl -n nemesis-lab port-forward svc/nemesis-lab-cloud 3000:3000
+    kubectl -n majutsu-lab port-forward svc/majutsu-lab-cloud 3000:3000
     ```
 
     Open **http://localhost:3000** and create the first Owner the same way as compose.
@@ -134,7 +134,7 @@ Use this only if you already have a Kubernetes cluster. Nemesis does not ship a 
     Reuse `mint-lab-worker.sh` or `POST /api/control-plane/lab-worker-credentials`. The helper’s trailing `docker compose up` is the **compose** installer — ignore it on Helm. Write the minted token and org id into the existing Secret. Keep the **same** `VAULT_LOCAL_KEY`. Roll the lab-worker Deployment.
   </Step>
   <Step title="Verify pull">
-    Lab-worker log should show outbound pull from `http://nemesis-lab-cloud:3000`. No `nmsp_` Deployment. Empty pull is success when nothing is queued.
+    Lab-worker log should show outbound pull from `http://majutsu-lab-cloud:3000`. No `nmsp_` Deployment. Empty pull is success when nothing is queued.
   </Step>
 </Steps>
 

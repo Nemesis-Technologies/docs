@@ -1,14 +1,14 @@
 ---
-title: "Nemesis Docs"
+title: "Majutsu Docs"
 description: "Public Admin, ISSO, and contractor DBA docs. Start the first-scan path for lab Postgres 16."
-keywords: ["nemesis", "admin", "isso", "contractor", "first scan"]
+keywords: ["majutsu", "admin", "isso", "contractor", "first scan"]
 ---
 
 import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 <HonestyLocks />
 
-This site is the **public** customer surface for Nemesis: Admin, ISSO, and contractor DBA. It is not the internal engineer handbook. Product papers and install runbooks stay in the portal repo; this site summarizes them and links by path.
+This site is the **public** customer surface for Majutsu: Admin, ISSO, and contractor DBA. It is not the internal engineer handbook. Product papers and install runbooks stay in the portal repo; this site summarizes them and links by path.
 
 The acceptance path is a **first scan you can complete from these pages**: install the lab stack, register a least-priv Postgres 16 target, queue a STIG scan, export CKL when findings exist, then record a waiver overlay.
 
@@ -17,7 +17,7 @@ The acceptance path is a **first scan you can complete from these pages**: insta
     Install → add target → run scan → export CKL → waivers. Architecture for a reviewer is linked at the end.
   </Card>
   <Card title="Lab / closed network" icon="server" href="/self-hosted/overview">
-    Connected Hub-pull compose, air-gap pack / load, offline license. Phase 2 `nemesis` is GET-only.
+    Connected Hub-pull compose, air-gap pack / load, offline license. Phase 2 `majutsu` is GET-only.
   </Card>
 </Columns>
 
@@ -27,7 +27,7 @@ The acceptance path is a **first scan you can complete from these pages**: insta
 | --- | --- |
 | Contractor DBA bringing up a lab | [Install](/first-scan/install), then [add a target](/first-scan/add-target) |
 | Operator running connected compose / air-gap pack / license | [Lab / closed network](/self-hosted/overview) |
-| Operator using Phase 2 `nemesis` GET verbs | [CLI command × role](/self-hosted/cli-roles) |
+| Operator using Phase 2 `majutsu` GET verbs | [CLI command × role](/self-hosted/cli-roles) |
 | Operator running the first STIG scan | [Run scan](/first-scan/run-scan) |
 | ISSO exporting a checklist | [Export CKL](/first-scan/export-ckl) |
 | Sales / design partner sharing a lab sample | [Lab demo pack](/first-scan/demo-pack) |
@@ -37,7 +37,7 @@ The acceptance path is a **first scan you can complete from these pages**: insta
 ## What this site does not claim
 
 - Production-ready on-prem, air-gap shipped as a customer product, or multi-cluster. **Hub-pull compose ≠ air-gap.**
-- A production-ready `nemesis` CLI, StartScan from the CLI, or writes. Phase 2 is **GET-only**. Role tokens exist; see [CLI command × role](/self-hosted/cli-roles).
+- A production-ready `majutsu` CLI, StartScan from the CLI, or writes. Phase 2 is **GET-only**. Role tokens exist; see [CLI command × role](/self-hosted/cli-roles).
 - CUI, confidential STIG packages, or a standalone XCCDF dump.
 - Full engine coverage (MySQL, Mongo, SQL Server, Oracle packs may exist in the engine; they are not this first-scan path).
 - FedRAMP, CMMC PASS, SOC 2, or any certification.
@@ -45,4 +45,4 @@ The acceptance path is a **first scan you can complete from these pages**: insta
 
 ## Cited portal tip
 
-Cited portal `main` after NMS-140: [`e11720843762a8a7c2be7f12e31ec0b44e3c0bda`](https://github.com/Nemesis-Technologies/portal/tree/e11720843762a8a7c2be7f12e31ec0b44e3c0bda). Confirm HEAD if you are reading later. Do not treat portal `docs/runbooks` as relocated into this repo.
+Cited portal `main` after NMS-281 (W3 Majutsu self-hosted cutover): [`144e0f9d53f815c590f9513af31150bc557a1ec5`](https://github.com/Nemesis-Technologies/portal/tree/144e0f9d53f815c590f9513af31150bc557a1ec5). Confirm HEAD if you are reading later. Do not treat portal `docs/runbooks` as relocated into this repo.
