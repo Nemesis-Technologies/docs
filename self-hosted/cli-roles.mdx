@@ -1,21 +1,21 @@
 ---
 title: "CLI command × role"
 sidebarTitle: "CLI roles"
-description: "Phase 2 nemesis findings, assets, and jobs verbs vs portal roles. GET-only. Role tokens exist."
-keywords: ["nemesis-cli", "roles", "nms_", "Admin", "Analyst", "Operator", "Auditor", "NMS-210"]
+description: "Phase 2 majutsu findings, assets, and jobs verbs vs portal roles. GET-only. Role tokens exist."
+keywords: ["majutsu-cli", "roles", "nms_", "Admin", "Analyst", "Operator", "Auditor", "NMS-210"]
 ---
 
 import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 <HonestyLocks />
 
-Phase 2 `nemesis` verbs (`findings`, `assets`, `jobs`) are **GET-only** portal API reads. They use a control-plane `nms_` Bearer token. Authz is the live org membership role — the same matrix as a console session.
+Phase 2 `majutsu` verbs (`findings`, `assets`, `jobs`) are **GET-only** portal API reads. They use a control-plane `nms_` Bearer token. Authz is the live org membership role — the same matrix as a console session.
 
 <Warning>
   **Honesty.** Phase 2 CLI [shipped Admin-only](https://linear.app/nemesistech/issue/NMS-209/build-nemesis-cli-phase-2-admin-portal-api-scan-findings-evidence) (NMS-209). Early docs said mint an Admin `nms_` only. **Role tokens now exist:** Settings UI mint shipped ([NMS-207](https://linear.app/nemesistech/issue/NMS-207/role-based-api-tokens-matching-portal-rbac-ui-mint) portal#178 squash [`4b09e047`](https://github.com/Nemesis-Technologies/portal/commit/4b09e04755372c4924cd0f54fc1dfdd79ca55349)); Admin API mint productized ([NMS-211](https://linear.app/nemesistech/issue/NMS-211/nms-207-residual-admin-api-mint-for-role-based-nms-tokens) portal#182 squash [`92ead642`](https://github.com/Nemesis-Technologies/portal/commit/92ead6425283b0f453c546bddee9d5107503afb9)). Bearer authz is the live membership matrix ([ADR-0001](https://github.com/Nemesis-Technologies/portal/blob/92ead6425283b0f453c546bddee9d5107503afb9/docs/ADR-0001-identity-rbac.md) / [ADR-0072](https://github.com/Nemesis-Technologies/portal/blob/92ead6425283b0f453c546bddee9d5107503afb9/docs/ADR-0072-role-based-api-tokens.md)). This CLI is still **GET-only**. It has no StartScan and no writes. Not production-ready. **CUI never.** Never send `nms_` to the engine. The CLI rejects worker prefixes (`nmlw_` / `nmsp_` / `nmdp_`).
 </Warning>
 
-Install, flags, and per-command detail stay in the [`nemesis-cli` README](https://github.com/Nemesis-Technologies/nemesis-cli/blob/main/README.md). This page is the **command × role** matrix only.
+Install, flags, and per-command detail stay in the [`majutsu-cli` README](https://github.com/Nemesis-Technologies/majutsu-cli/blob/main/README.md). This page is the **command × role** matrix only.
 
 ## Who can call Phase 2 GET verbs
 
@@ -25,16 +25,16 @@ So a token bound to any of those five roles can run the Phase 2 GET verbs below.
 
 | Command | OpenAPI path | Scope | Owner | Admin | Analyst | Operator | Auditor |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `nemesis findings list` | `GET /api/control-plane/findings` | `findings.read` | yes | yes | yes | yes | yes |
-| `nemesis findings get <id>` | `GET /api/control-plane/findings/{id}` | `findings.read` | yes | yes | yes | yes | yes |
-| `nemesis findings export` | `GET /api/control-plane/findings/export` | `findings.read` | yes | yes | yes | yes | yes |
-| `nemesis findings export-xml` | `GET /api/control-plane/findings/export/xml` | `findings.read` | yes | yes | yes | yes | yes |
-| `nemesis findings export-superusers` | `GET /api/control-plane/findings/export/superusers` | `findings.read` | yes | yes | yes | yes | yes |
-| `nemesis findings export-shared-suspects` | `GET /api/control-plane/findings/export/shared-suspects` | `findings.read` | yes | yes | yes | yes | yes |
-| `nemesis findings export-key-locations` | `GET /api/control-plane/findings/export/key-locations` | `findings.read` | yes | yes | yes | yes | yes |
-| `nemesis assets list` | `GET /api/control-plane/assets` | `assets.read` | yes | yes | yes | yes | yes |
-| `nemesis jobs list` | `GET /api/control-plane/jobs` | `scans.read` | yes | yes | yes | yes | yes |
-| `nemesis jobs get <id>` | `GET /api/control-plane/jobs/{id}` | `scans.read` | yes | yes | yes | yes | yes |
+| `majutsu findings list` | `GET /api/control-plane/findings` | `findings.read` | yes | yes | yes | yes | yes |
+| `majutsu findings get <id>` | `GET /api/control-plane/findings/{id}` | `findings.read` | yes | yes | yes | yes | yes |
+| `majutsu findings export` | `GET /api/control-plane/findings/export` | `findings.read` | yes | yes | yes | yes | yes |
+| `majutsu findings export-xml` | `GET /api/control-plane/findings/export/xml` | `findings.read` | yes | yes | yes | yes | yes |
+| `majutsu findings export-superusers` | `GET /api/control-plane/findings/export/superusers` | `findings.read` | yes | yes | yes | yes | yes |
+| `majutsu findings export-shared-suspects` | `GET /api/control-plane/findings/export/shared-suspects` | `findings.read` | yes | yes | yes | yes | yes |
+| `majutsu findings export-key-locations` | `GET /api/control-plane/findings/export/key-locations` | `findings.read` | yes | yes | yes | yes | yes |
+| `majutsu assets list` | `GET /api/control-plane/assets` | `assets.read` | yes | yes | yes | yes | yes |
+| `majutsu jobs list` | `GET /api/control-plane/jobs` | `scans.read` | yes | yes | yes | yes | yes |
+| `majutsu jobs get <id>` | `GET /api/control-plane/jobs/{id}` | `scans.read` | yes | yes | yes | yes | yes |
 
 `findings export` is the POA&M CSV. Console CKL / CKLB download is a different path: [Export CKL](/first-scan/export-ckl). Spec: portal [`docs/openapi-control-plane-v0.yaml`](https://github.com/Nemesis-Technologies/portal/blob/92ead6425283b0f453c546bddee9d5107503afb9/docs/openapi-control-plane-v0.yaml) at `92ead642`.
 
@@ -42,7 +42,7 @@ So a token bound to any of those five roles can run the Phase 2 GET verbs below.
 
 ## Not in this CLI
 
-These actions exist on the console (and, for mint, the Admin API). They are **not** `nemesis` verbs. Do not invent `nemesis scan start` or a waiver CLI.
+These actions exist on the console (and, for mint, the Admin API). They are **not** `majutsu` verbs. Do not invent `majutsu scan start` or a waiver CLI.
 
 | Action | Owner | Admin | Analyst | Operator | Auditor | Where it lives |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -59,7 +59,7 @@ Admin or Owner (`settings.manage`) mints in the console: org **Settings** (porta
 
 Cite: portal [`apps/cloud/app/(protected)/[id]/settings/api-token-settings.tsx`](https://github.com/Nemesis-Technologies/portal/blob/4b09e04755372c4924cd0f54fc1dfdd79ca55349/apps/cloud/app/(protected)/[id]/settings/api-token-settings.tsx) (NMS-207 / ADR-0072). Admin API mint/list/revoke is the existing `/api/control-plane/tokens` surface (NMS-211). Analyst / Operator / Auditor cannot mint or revoke.
 
-Use that `nms_` with `NEMESIS_PORTAL_URL` + `NEMESIS_API_TOKEN` as the README shows. Never log it. Never send it to `rue_scan_engine`.
+Use that `nms_` with `MAJUTSU_PORTAL_URL` + `MAJUTSU_API_TOKEN` as the README shows. Never log it. Never send it to `rue_scan_engine`.
 
 ## Token locks
 
@@ -77,7 +77,7 @@ Use that `nms_` with `NEMESIS_PORTAL_URL` + `NEMESIS_API_TOKEN` as the README sh
 | Control-plane OpenAPI | [`docs/openapi-control-plane-v0.yaml`](https://github.com/Nemesis-Technologies/portal/blob/92ead6425283b0f453c546bddee9d5107503afb9/docs/openapi-control-plane-v0.yaml) |
 | Settings UI mint | [`[id]/settings`](https://github.com/Nemesis-Technologies/portal/blob/4b09e04755372c4924cd0f54fc1dfdd79ca55349/apps/cloud/app/(protected)/[id]/settings/api-token-settings.tsx) (portal#178 `4b09e047`) |
 | Admin API mint | `/api/control-plane/tokens` (portal#182 `92ead642`) |
-| CLI install / commands | [`nemesis-cli` README](https://github.com/Nemesis-Technologies/nemesis-cli/blob/main/README.md) |
+| CLI install / commands | [`majutsu-cli` README](https://github.com/Nemesis-Technologies/majutsu-cli/blob/main/README.md) |
 
 Which binary you are holding is on the [tool family](/self-hosted/tool-family) table. Phase 1 lab / air-gap / license wrap does not use an `nms_` token.
 

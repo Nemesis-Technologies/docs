@@ -1,8 +1,8 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Nemesis Docs",
-  "description": "Public Admin, ISSO, and contractor DBA docs for Nemesis. First-scan path for lab Postgres 16. Not the internal engineer handbook.",
+  "name": "Majutsu Docs",
+  "description": "Public Admin, ISSO, and contractor DBA docs for Majutsu. First-scan path for lab Postgres 16. Not the internal engineer handbook.",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",

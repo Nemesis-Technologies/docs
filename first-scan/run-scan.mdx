@@ -30,7 +30,7 @@ Default lab policy is `stig-postgres-16` on queue `scan`. Weekly cron default is
     The job appears in the Scans table (`queued` → `running` → terminal). Cancel requires `scans.cancel`.
   </Step>
   <Step title="Watch the lab-worker pull">
-    Compose: `docker compose logs lab-worker --tail=50`. Helm: `kubectl -n nemesis-lab logs deploy/nemesis-lab-lab-worker --tail=50`.
+    Compose: `docker compose logs lab-worker --tail=50`. Helm: `kubectl -n majutsu-lab logs deploy/majutsu-lab-lab-worker --tail=50`.
 
     You want outbound pull of the org from the cloud service. Empty pull is success when nothing is queued. After you queue, the worker should claim the lab job (`environment=lab` only).
   </Step>
@@ -60,6 +60,6 @@ STIG-of-lab (after a successful Mimic load) reuses the same `queue=scan` / `stig
 
 - Terminal `succeeded` plus a linked worker: open **Findings**. Expect DISA `V-` rows from the Postgres 16 pack when the engine ran.
 - Terminal `failed`: read the error on the Scans row. Dual refuse of non-lab + RDS stays on `nmlw_`. A refuse of `nmsp_` means the wrong token landed in this stack — remove it.
-- Open CAT I on Findings is empty until stored `cat=I` exists (Nemesis-authored four V-IDs). High severity is not CAT I.
+- Open CAT I on Findings is empty until stored `cat=I` exists (Majutsu-authored four V-IDs). High severity is not CAT I.
 
 Next: [export CKL](/first-scan/export-ckl).

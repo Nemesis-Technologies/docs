@@ -1,6 +1,6 @@
-# Nemesis Docs
+# Majutsu Docs
 
-Public customer docs for **Nemesis** (Mintlify). This repo is the Admin / ISSO / contractor DBA surface for [NMS-88](https://linear.app/nemesistech/issue/NMS-88/admin-and-isso-documentation-set).
+Public customer docs for **Majutsu** (Mintlify). This repo is the Admin / ISSO / contractor DBA surface for [NMS-88](https://linear.app/nemesistech/issue/NMS-88/admin-and-isso-documentation-set).
 
 It is **not** the internal engineer handbook (`docs-internal`). It is **not** the home for portal runbooks — those stay in `portal` and are cited by path.
 
@@ -57,12 +57,12 @@ Favicon uses the same mark as the internal handbook (`docs-internal` `favicon.sv
 
 ## Sources of truth
 
-Cited against portal `main` after NMS-140 at `e11720843762a8a7c2be7f12e31ec0b44e3c0bda` (confirm HEAD if you are reading later):
+Cited against portal `main` after NMS-281 (W3 Majutsu self-hosted cutover) at `144e0f9d53f815c590f9513af31150bc557a1ec5` (confirm HEAD if you are reading later):
 
 - Lab compose install: `apps/self-hosted/LAB-INSTALL.md` (NMS-80 / ADR-0062)
 - Helm / n-1 notes: `apps/self-hosted/HELM-INSTALL.md`
 - Air-gap pack: `apps/self-hosted/AIR-GAP.md`, `pack-airgap.sh`, `compose.airgap.yaml` (NMS-81 / ADR-0063)
-- License: `apps/self-hosted/nemesis-license.sh`, `airgap-license-gate.sh`, `airgap-license-validate.sh` (NMS-33 / ADR-0070)
+- License: `apps/self-hosted/majutsu-license.sh`, `airgap-license-gate.sh`, `airgap-license-validate.sh` (NMS-33 / ADR-0070)
 - Least-priv classify role: `docs/runbooks/nms-classify-sample-lab-role.md` and `.sql`
 - CKL export design: `docs/ADR-0035-ckl-portal-export.md`
 - Waivers / POA&M: `docs/ADR-0014-poam-waiver.md`

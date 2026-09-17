@@ -39,7 +39,7 @@ Nav: **Assets**. Empty state: add first target, then launch first scan.
     - **Host** — hostname only (placeholder shape: `lab-postgres.internal`). Never a DSN, never userinfo.
     - **Port** — default `5432`.
 
-    Submit **Add target**. The console stores `engine: postgres` and `environment: lab` (Nemesis-owned lab DBs only for this first-scan path).
+    Submit **Add target**. The console stores `engine: postgres` and `environment: lab` (Majutsu-owned lab DBs only for this first-scan path).
   </Step>
   <Step title="Vault the STIG LOGIN">
     Use a dedicated read-only scan account. Attach a vault credential in **Settings** (Admin). The asset keeps an opaque `credential_ref`. The console stores ciphertext. The worker unwraps JIT in memory. Next.js never sees a plaintext DSN.

@@ -1,7 +1,7 @@
 ---
 title: "License"
-description: "Offline nemesis-license.sh gen-key / generate / validate, plus air-gap presence and Ed25519 gates. No phone-home."
-keywords: ["license", "nemesis-license", "ed25519", "air-gap", "NMS-33"]
+description: "Offline majutsu-license.sh gen-key / generate / validate, plus air-gap presence and Ed25519 gates. No phone-home."
+keywords: ["license", "majutsu-license", "ed25519", "air-gap", "NMS-33"]
 ---
 
 import HonestyLocks from "/snippets/honesty-locks.mdx";
@@ -10,7 +10,7 @@ import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 Offline license file. Generate on a signing host. Validate locally. **No phone-home.** There is no license server. Do **not** log the license body, private key, or public key.
 
-Cite: portal [`apps/self-hosted/nemesis-license.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/nemesis-license.sh) at `e1172084` (NMS-33 / [ADR-0070](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0070-license-entitlement.md)). Presence: [`airgap-license-gate.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/airgap-license-gate.sh). Schema + Ed25519: [`airgap-license-validate.sh`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/airgap-license-validate.sh). Air-gap sit-on: [ADR-0063](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/docs/ADR-0063-air-gap-disconnected.md) (NMS-81). Do not rewrite those papers.
+Cite: portal [`apps/self-hosted/majutsu-license.sh`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/majutsu-license.sh) at `144e0f9d` (NMS-33 / [ADR-0070](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/docs/ADR-0070-license-entitlement.md)). Presence: [`airgap-license-gate.sh`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/airgap-license-gate.sh). Schema + Ed25519: [`airgap-license-validate.sh`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/airgap-license-validate.sh). Air-gap sit-on: [ADR-0063](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/docs/ADR-0063-air-gap-disconnected.md) (NMS-81). Do not rewrite those papers.
 
 <Warning>
   Private signing key is operator-held. Do not commit it. Do not put it in the air-gap image or on the IL. Sneakernet the **public** verify key only.
@@ -22,51 +22,51 @@ Connected Hub-pull [lab compose](/self-hosted/lab-compose) does not require a li
 
 | Stage | Script | What it proves |
 | --- | --- | --- |
-| Presence | `airgap-license-gate.sh` | `NEMESIS_LICENSE_FILE` is a non-empty readable regular file. Missing / unset / empty / directory-mount **refuses to start**. |
-| Schema + Ed25519 | `airgap-license-validate.sh` | `NEMESIS-LICENSE-V1` file, edition, instance count, `issued_at`, `org_id` and/or `binding_id`, optional `not_after` not expired, signature verifies with the public key. |
+| Presence | `airgap-license-gate.sh` | `MAJUTSU_LICENSE_FILE` is a non-empty readable regular file. Missing / unset / empty / directory-mount **refuses to start**. |
+| Schema + Ed25519 | `airgap-license-validate.sh` | `MAJUTSU-LICENSE-V1` file, edition, instance count, `issued_at`, `org_id` and/or `binding_id`, optional `not_after` not expired, signature verifies with the public key. `NEMESIS-LICENSE-V1` fail-closes. |
 
 The gate always calls the validator after presence. Fail-closed on bad schema, bad signature, expired `not_after`, or missing verify key. Instance-count 20% ceiling is the control plane (`POST /api/control-plane/assets`), not this gate.
 
 Env:
 
-- `NEMESIS_LICENSE_FILE` — absolute or compose-relative path to the signed file
-- `NEMESIS_LICENSE_VERIFY_KEY_FILE` — public verify key only. Fallback search (validator only): `<license-path>.pub` or `/run/nemesis/license.pub`
+- `MAJUTSU_LICENSE_FILE` — absolute or compose-relative path to the signed file
+- `MAJUTSU_LICENSE_VERIFY_KEY_FILE` — public verify key only. Fallback search (validator only): `<license-path>.pub` or `/run/majutsu/license.pub`
 
-## Generate offline (`nemesis-license.sh`)
+## Generate offline (`majutsu-license.sh`)
 
 Work from `apps/self-hosted/` on a signing host (may be the connected pack host). Editions: `compliance` | `protect` | `platform`. Count must be a positive integer. You must pass `--org-id` and/or `--binding-id`.
 
 <Steps>
   <Step title="Generate an Ed25519 keypair">
     ```bash
-    chmod +x nemesis-license.sh
-    ./nemesis-license.sh gen-key \
+    chmod +x majutsu-license.sh
+    ./majutsu-license.sh gen-key \
       --private /path/to/operator-held/signing.pem \
-      --public /path/to/nemesis.lic.pub
+      --public /path/to/majutsu.lic.pub
     ```
 
     Success prints that a keypair was written. Contents are not logged. Keep the private path off git and off the IL.
   </Step>
   <Step title="Sign a license file">
     ```bash
-    ./nemesis-license.sh generate \
+    ./majutsu-license.sh generate \
       --key /path/to/operator-held/signing.pem \
       --edition compliance \
       --count 1 \
       --org-id "$ORG_ID" \
-      --out /path/to/nemesis.lic
+      --out /path/to/majutsu.lic
     ```
 
     Optional: `--binding-id ID`, `--not-after` as a UTC ISO timestamp. Success prints that a signed file was written. Do not `cat` the file into tickets, logs, or this site.
   </Step>
   <Step title="Validate locally">
     ```bash
-    ./nemesis-license.sh validate \
-      --file /path/to/nemesis.lic \
-      --public /path/to/nemesis.lic.pub
+    ./majutsu-license.sh validate \
+      --file /path/to/majutsu.lic \
+      --public /path/to/majutsu.lic.pub
     ```
 
-    That wrapper sets `NEMESIS_LICENSE_FILE` / `NEMESIS_LICENSE_VERIFY_KEY_FILE` and runs `airgap-license-validate.sh`. Expect: `air-gap license schema+signature validated (contents not logged; no phone-home)`.
+    That wrapper sets `MAJUTSU_LICENSE_FILE` / `MAJUTSU_LICENSE_VERIFY_KEY_FILE` and runs `airgap-license-validate.sh`. Expect: `air-gap license schema+signature validated (contents not logged; no phone-home)`.
   </Step>
 </Steps>
 
@@ -77,16 +77,16 @@ Owner / Admin `settings.manage` on a signing host can also produce a file. Same 
 On the IL, after [pack / load](/self-hosted/air-gap):
 
 ```bash
-export NEMESIS_LICENSE_FILE=/path/to/local/nemesis.lic
-export NEMESIS_LICENSE_VERIFY_KEY_FILE=/path/to/local/nemesis.lic.pub
+export MAJUTSU_LICENSE_FILE=/path/to/local/majutsu.lic
+export MAJUTSU_LICENSE_VERIFY_KEY_FILE=/path/to/local/majutsu.lic.pub
 docker compose -f compose.yaml -f compose.airgap.yaml up -d --no-build --pull never
 ```
 
 `compose.airgap.yaml` runs `airgap-license-gate.sh` as `license-gate` (must complete successfully) and again on `cloud` / `lab-worker` entrypoints. You can run the same checks by hand:
 
 ```bash
-export NEMESIS_LICENSE_FILE=/path/to/local/nemesis.lic
-export NEMESIS_LICENSE_VERIFY_KEY_FILE=/path/to/local/nemesis.lic.pub
+export MAJUTSU_LICENSE_FILE=/path/to/local/majutsu.lic
+export MAJUTSU_LICENSE_VERIFY_KEY_FILE=/path/to/local/majutsu.lic.pub
 ./airgap-license-gate.sh
 ```
 
@@ -97,6 +97,6 @@ Presence-only success is not enough if the validator is missing — the gate fai
 - No phone-home. No license-server. Do not log file contents or keys.
 - CUI never.
 - This is not a customer entitlement portal and not FedRAMP/CMMC PASS.
-- `nemesis license` exists as a Phase 1 wrap of these scripts. This page still cites the scripts. Phase 2 GET roles are on [CLI command × role](/self-hosted/cli-roles).
+- `majutsu license` exists as a Phase 1 wrap of these scripts. This page still cites the scripts. Phase 2 GET roles are on [CLI command × role](/self-hosted/cli-roles).
 
 See [tool family](/self-hosted/tool-family) if you are holding `dbscanner` or `dam-proxy` by mistake.

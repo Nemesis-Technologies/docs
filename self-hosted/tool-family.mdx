@@ -1,31 +1,31 @@
 ---
 title: "Tool family"
-description: "Self-hosted scripts vs shipped nemesis CLI vs dbscanner vs dam-proxy. Phase 2 is GET-only."
-keywords: ["nemesis CLI", "dbscanner", "dam-proxy", "scripts", "NMS-210"]
+description: "Self-hosted scripts vs shipped majutsu CLI vs dbscanner vs dam-proxy. Phase 2 is GET-only."
+keywords: ["majutsu CLI", "dbscanner", "dam-proxy", "scripts", "NMS-210"]
 ---
 
 import HonestyLocks from "/snippets/honesty-locks.mdx";
 
 <HonestyLocks />
 
-Four names. They are **not** the same binary. Do not rebrand `dbscanner` or `dam-proxy` as “the Nemesis CLI.”
+Four names. They are **not** the same binary. Do not rebrand `dbscanner` or `dam-proxy` as “the Majutsu CLI.”
 
 <Warning>
-  The product CLI (`nemesis`, repo [`nemesis-cli`](https://github.com/Nemesis-Technologies/nemesis-cli)) is **shipped**: Phase 1 wraps the lab / air-gap / license scripts; Phase 2 is a **GET-only** portal client (`findings` / `assets` / `jobs`). It shipped Admin-only ([NMS-209](https://linear.app/nemesistech/issue/NMS-209/build-nemesis-cli-phase-2-admin-portal-api-scan-findings-evidence)). **Role tokens now exist** (Settings UI mint [NMS-207](https://linear.app/nemesistech/issue/NMS-207/role-based-api-tokens-matching-portal-rbac-ui-mint); Admin API mint [NMS-211](https://linear.app/nemesistech/issue/NMS-211/nms-207-residual-admin-api-mint-for-role-based-nms-tokens)). Phase 2 GET verbs work for Analyst / Operator / Auditor / Owner tokens that have the ADR-0001 reads — not Admin-only at the token layer. The CLI still has **no StartScan and no writes**. See [CLI command × role](/self-hosted/cli-roles).
+  The product CLI (`majutsu`, repo [`majutsu-cli`](https://github.com/Nemesis-Technologies/majutsu-cli)) is **shipped**: Phase 1 wraps the lab / air-gap / license scripts; Phase 2 is a **GET-only** portal client (`findings` / `assets` / `jobs`). It shipped Admin-only ([NMS-209](https://linear.app/nemesistech/issue/NMS-209/build-nemesis-cli-phase-2-admin-portal-api-scan-findings-evidence)). **Role tokens now exist** (Settings UI mint [NMS-207](https://linear.app/nemesistech/issue/NMS-207/role-based-api-tokens-matching-portal-rbac-ui-mint); Admin API mint [NMS-211](https://linear.app/nemesistech/issue/NMS-211/nms-207-residual-admin-api-mint-for-role-based-nms-tokens)). Phase 2 GET verbs work for Analyst / Operator / Auditor / Owner tokens that have the ADR-0001 reads — not Admin-only at the token layer. The CLI still has **no StartScan and no writes**. See [CLI command × role](/self-hosted/cli-roles).
 </Warning>
 
 ## Comparison
 
-| | Existing scripts | `nemesis` CLI | `dbscanner` | `dam-proxy` |
+| | Existing scripts | `majutsu` CLI | `dbscanner` | `dam-proxy` |
 | --- | --- | --- | --- | --- |
 | **What it is** | Bash + Compose under portal `apps/self-hosted/` | Phase 1 wrap of those flows + Phase 2 GET portal client | Engine / lab CLI | Protect DAM daemon |
 | **Shipped?** | Yes — cite [overview](/self-hosted/overview) | **Yes** (not production-ready) | Yes (eng/lab engine) | Yes (daemon) |
 | **Who runs it** | Lab / IL operator | Lab / IL operator. Phase 2 uses a role-bound `nms_` token | Engineer / lab | Operator of the DAM proxy process |
-| **Lab compose** | `docker compose` + `mint-lab-worker.sh` + [`LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/e11720843762a8a7c2be7f12e31ec0b44e3c0bda/apps/self-hosted/LAB-INSTALL.md) | `nemesis lab` / `doctor` | Not this installer | Not this installer |
-| **Air-gap** | `pack-airgap.sh` + `compose.airgap.yaml` | `nemesis airgap` | Not the pack path | Not the pack path |
-| **License** | `nemesis-license.sh` + gate / validate | `nemesis license` (script wrap) | Does not issue licenses | Not a license CLI |
+| **Lab compose** | `docker compose` + `mint-lab-worker.sh` + [`LAB-INSTALL.md`](https://github.com/Nemesis-Technologies/portal/blob/144e0f9d53f815c590f9513af31150bc557a1ec5/apps/self-hosted/LAB-INSTALL.md) | `majutsu lab` / `doctor` | Not this installer | Not this installer |
+| **Air-gap** | `pack-airgap.sh` + `compose.airgap.yaml` | `majutsu airgap` | Not the pack path | Not the pack path |
+| **License** | `majutsu-license.sh` + gate / validate | `majutsu license` (script wrap) | Does not issue licenses | Not a license CLI |
 | **Scan a database** | Console **Run Scan**; `nmlw_` pulls; engine in-process when linked | **Does not exec `dbscanner`.** Phase 2 reads jobs / findings via portal GET. No StartScan. | Eng/lab engine entry | Does not scan |
-| **Rebrand as Nemesis CLI?** | No — scripts stay | This **is** the customer-facing name | **No** | **No** |
+| **Rebrand as Majutsu CLI?** | No — scripts stay | This **is** the customer-facing name | **No** | **No** |
 
 ## What you run today
 
@@ -33,7 +33,7 @@ Operator path on this site:
 
 1. [Lab compose](/self-hosted/lab-compose) — Hub-pull `compose.yaml` (scripts remain the cited path)
 2. [Air-gap pack](/self-hosted/air-gap) — connected pack, sneakernet, no-pull compose
-3. [License](/self-hosted/license) — `nemesis-license.sh` gen-key / generate / validate
+3. [License](/self-hosted/license) — `majutsu-license.sh` gen-key / generate / validate
 4. [CLI command × role](/self-hosted/cli-roles) — Phase 2 GET verbs vs Admin | Analyst | Operator | Auditor (+ Owner)
 
 Contractor DBA first scan after the lab is up: [First-scan path](/first-scan/overview).
@@ -43,8 +43,8 @@ Contractor DBA first scan after the lab is up: [First-scan path](/first-scan/ove
 - Do not treat `dbscanner` as the customer operator tool.
 - Do not treat `dam-proxy` as a CLI shell.
 - Do not invent per-offering CLIs (Discovery / Mimic / …).
-- Do not invent `nemesis scan start` or waiver writes. [NMS-206](https://linear.app/nemesistech/issue/NMS-206/future-operators-control-dbscanners-via-portal-ui-andor-cli) is not this CLI.
+- Do not invent `majutsu scan start` or waiver writes. [NMS-206](https://linear.app/nemesistech/issue/NMS-206/future-operators-control-dbscanners-via-portal-ui-andor-cli) is not this CLI.
 - Do not send `nms_` to the engine. The CLI rejects `nmlw_` / `nmsp_` / `nmdp_`.
 - Do not claim Hub-pull compose is air-gap.
 
-Install and command lists: [`nemesis-cli` README](https://github.com/Nemesis-Technologies/nemesis-cli/blob/main/README.md). Parent plan: [NMS-203](https://linear.app/nemesistech/issue/NMS-203/product-paper-nemesis-operator-tools-cli-needs-plan). This docs ticket is [NMS-210](https://linear.app/nemesistech/issue/NMS-210/nms-207-residual-nemesis-cli-command-role-docs).
+Install and command lists: [`majutsu-cli` README](https://github.com/Nemesis-Technologies/majutsu-cli/blob/main/README.md). Parent plan: [NMS-203](https://linear.app/nemesistech/issue/NMS-203/product-paper-nemesis-operator-tools-cli-needs-plan). This docs ticket is [NMS-210](https://linear.app/nemesistech/issue/NMS-210/nms-207-residual-nemesis-cli-command-role-docs).
